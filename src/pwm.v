@@ -10,10 +10,10 @@ module pwm #(
 	output reg [7:0] csr_do,
 
 	input pwm_ce,
+	output reg pwm_en,
 	output pwm_out
 );
 
-reg pwm_en;
 reg [1:0] pwm_scale;
 reg [6:0] duty_cycle;
 always @(posedge clk) begin
