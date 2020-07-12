@@ -1,2 +1,11 @@
-set_location_assignment PIN_L1 -to HEALTHY_LED
 set_global_assignment -name ENABLE_DEVICE_WIDE_OE ON
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+
+set_location_assignment PIN_L1 -to HEALTHY_LED
+set_location_assignment PIN_H2 -to I2C_LOCAL_SDA_3V3
+set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to I2C_LOCAL_SDA_3V3
+set_location_assignment PIN_H3 -to I2C_LOCAL_SCL_3V3
+set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to I2C_LOCAL_SCL_3V3
+
+set_location_assignment PIN_K9 -to PWR_FORCE_DISABLE_n
+set_location_assignment PIN_L11 -to LCD0_BKLT_PWM_3V3
