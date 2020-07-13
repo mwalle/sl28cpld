@@ -7,5 +7,34 @@ set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to I2C_L
 set_location_assignment PIN_H3 -to I2C_LOCAL_SCL_3V3
 set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to I2C_LOCAL_SCL_3V3
 
+set_location_assignment PIN_B3 -to CPLD_INTERRUPT_CFG_RCW_SRC2
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CPLD_INTERRUPT_CFG_RCW_SRC2
+
+set_location_assignment PIN_J11 -to GPIO0_CAM0_PWR_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO0_CAM0_PWR_n
+set_location_assignment PIN_H11 -to GPIO1_CAM1_PWR_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO1_CAM1_PWR_n
+set_location_assignment PIN_F11 -to GPIO2_CAM0_RST_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO2_CAM0_RST_n
+set_location_assignment PIN_E11 -to GPIO3_CAM1_RST_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO3_CAM1_RST_n
+set_location_assignment PIN_D11 -to GPIO4_HDA_RST_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO4_HDA_RST_n
+set_location_assignment PIN_C11 -to GPIO5_PWM_OUT
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO5_PWM_OUT
+set_location_assignment PIN_B11 -to GPIO6_TACHIN
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO6_TACHIN
+set_location_assignment PIN_A11 -to GPIO7
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO7
+set_location_assignment PIN_A10 -to GPIO8
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO8
+set_location_assignment PIN_A9 -to GPIO9
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO9
+set_location_assignment PIN_A8 -to GPIO10
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO10
+set_location_assignment PIN_K11 -to GPIO11
+set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO11
+
 set_location_assignment PIN_K9 -to PWR_FORCE_DISABLE_n
 set_location_assignment PIN_L11 -to LCD0_BKLT_PWM_3V3
+
