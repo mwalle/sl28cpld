@@ -8,16 +8,11 @@ module sl28_top(
 	/* reset */
 	input PORESET_n,
 
-	/* interrupt */
-	output CPLD_INTERRUPT_CFG_RCW_SRC2,
-
 	/* board control & interrupt */
 	output PWR_FORCE_DISABLE_n,
 	output reg SER2_TX_CFG_RCW_SRC0,
 	output reg SER1_TX_CFG_RCW_SRC1,
 	output reg CPLD_INTERRUPT_CFG_RCW_SRC2,
-
-	output LCD0_BKLT_PWM_3V3,
 
 	/* GPIO */
 	inout GPIO0_CAM0_PWR_n,
@@ -31,7 +26,27 @@ module sl28_top(
 	inout GPIO8,
 	inout GPIO9,
 	inout GPIO10,
-	inout GPIO11
+	inout GPIO11,
+
+	/* GPO */
+	output LCD0_VDD_EN_3V3,
+	output LCD0_BKLT_EN_3V3,
+	output EMMC_RST_n,
+	output PTN3460_RST_n,
+	output PTN3460_PD_n,
+	output SDIO_PWR_EN,
+
+	/* GPI */
+	input POWER_BTN_n,
+	input FORCE_RECOV_n,
+	input SLEEP_n,
+	input BATLOW_n,
+	input LID_n,
+	input CHARGING_n,
+	input CHARGER_PRSNT_n,
+
+	/* PWM */
+	output LCD0_BKLT_PWM_3V3
 );
 
 wire clk;
@@ -117,11 +132,15 @@ wire [7:0] csr_do_pwm0;
 wire [7:0] csr_do_pwm1;
 wire [7:0] csr_do_gpio0;
 wire [7:0] csr_do_gpio1;
+wire [7:0] csr_do_gpo;
+wire [7:0] csr_do_gpi;
 assign csr_do = csr_do_rcw_ctrl |
 		csr_do_pwm0 |
 		csr_do_pwm1 |
 		csr_do_gpio0 |
-		csr_do_gpio1;
+		csr_do_gpio1 |
+		csr_do_gpo |
+		csr_do_gpi;
 
 i2c_slave i2c_slave(
 	.rst(rst),
@@ -235,12 +254,57 @@ assign gpio1_in[1] = GPIO9;
 assign gpio1_in[2] = GPIO10;
 assign gpio1_in[3] = GPIO11;
 
-assign irq_out = gpio0_irq | gpio1_irq;
+gpo #(
+	.BASE_ADDR(5'h1a),
+	.NUM_GPIOS(6)
+) gpo (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_gpo),
+
+	.out({
+		SDIO_PWR_EN,
+		PTN3460_PD_n,
+		PTN3460_RST_n,
+		EMMC_RST_n,
+		LCD0_BKLT_EN_3V3,
+		LCD0_VDD_EN_3V3
+	})
+);
+
+gpi #(
+	.BASE_ADDR(5'h1b),
+	.NUM_GPIOS(7)
+) gpi (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_gpi),
+
+	.in({
+		CHARGER_PRSNT_n,
+		CHARGING_n,
+		LID_n,
+		BATLOW_n,
+		SLEEP_n,
+		FORCE_RECOV_n,
+		POWER_BTN_n
+	})
+);
 
 always @(posedge clk) begin
 	csr_do_rcw_ctrl = 8'h00;
 	if (csr_a[4:1] == 4'b0)
 		csr_do_rcw_ctrl = 8'hff;
 end
+
+assign irq_out = gpio0_irq | gpio1_irq;
 
 endmodule

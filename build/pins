@@ -42,11 +42,42 @@ set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO10
 set_location_assignment PIN_K11 -to GPIO11
 set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO11
 
-set_location_assignment PIN_K9 -to PWR_FORCE_DISABLE_n
+set_location_assignment PIN_C1 -to LCD0_BKLT_EN_3V3
+set_location_assignment PIN_H1 -to LCD0_VDD_EN_3V3
+set_location_assignment PIN_J6 -to EMMC_RST_n
+set_location_assignment PIN_D3 -to PTN3460_PD_n
+set_location_assignment PIN_L7 -to PTN3460_RST_n
+set_location_assignment PIN_K7 -to SDIO_PWR_EN
+
+set_location_assignment PIN_G10 -to POWER_BTN_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to POWER_BTN_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to POWER_BTN_n
 
 set_location_assignment PIN_B2 -to FORCE_RECOV_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to FORCE_RECOV_n
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to FORCE_RECOV_n
 
+
+set_location_assignment PIN_B10 -to SLEEP_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SLEEP_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to SLEEP_n
+
+set_location_assignment PIN_G11 -to BATLOW_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to BATLOW_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BATLOW_n
+
+set_location_assignment PIN_D9 -to LID_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to LID_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to LID_n
+
+set_location_assignment PIN_C10 -to CHARGING_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CHARGING_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to CHARGING_n
+
+set_location_assignment PIN_F10 -to CHARGER_PRSNT_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CHARGER_PRSNT_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to CHARGER_PRSNT_n
+
 set_location_assignment PIN_L11 -to LCD0_BKLT_PWM_3V3
 
+set_location_assignment PIN_K9 -to PWR_FORCE_DISABLE_n
