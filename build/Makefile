@@ -5,7 +5,8 @@ FAMILY = MAX V
 PART = 5M570ZM100I5
 BOARDFILE = pins
 
-SRCS = ../src/top.v ../src/i2c_slave.v ../src/pwm.v ../src/gpio.v
+SRCS  = ../src/top.v ../src/i2c_slave.v ../src/pwm.v ../src/gpio.v
+SRCS += ../src/gpi.v ../src/gpo.v
 
 all: $(PROJECT).jbc
 
