@@ -111,13 +111,14 @@ assign HEALTHY_LED = healthy_led;
 wire [4:0] csr_a;
 wire [7:0] csr_di;
 wire csr_we;
+wire [7:0] csr_do;
+reg [7:0] csr_do_rcw_ctrl;
 wire [7:0] csr_do_pwm0;
 wire [7:0] csr_do_pwm1;
 wire [7:0] csr_do_gpio0;
 wire [7:0] csr_do_gpio1;
-wire [7:0] csr_do;
-
-assign csr_do = csr_do_pwm0 |
+assign csr_do = csr_do_rcw_ctrl |
+		csr_do_pwm0 |
 		csr_do_pwm1 |
 		csr_do_gpio0 |
 		csr_do_gpio1;
@@ -235,5 +236,11 @@ assign gpio1_in[2] = GPIO10;
 assign gpio1_in[3] = GPIO11;
 
 assign irq_out = gpio0_irq | gpio1_irq;
+
+always @(posedge clk) begin
+	csr_do_rcw_ctrl = 8'h00;
+	if (csr_a[4:1] == 4'b0)
+		csr_do_rcw_ctrl = 8'hff;
+end
 
 endmodule
