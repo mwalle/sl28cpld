@@ -45,4 +45,4 @@ map.chg fit.chg sta.chg asm.chg:
 	touch $@
 
 clean:
-	rm -rf db/ incremetal_db/ *.rpt *.chg *.eqn *.sof *.pof *.summary *.qpf
+	rm -rf db/ incremental_db/ *.rpt *.chg *.eqn *.sof *.pof *.summary *.qpf *.smsg *.jdi *.jbc *.jam *.pin *.qsf *.sld smart.log
