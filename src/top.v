@@ -5,6 +5,9 @@ module sl28_top(
 	inout I2C_LOCAL_SDA_3V3,
 	input I2C_LOCAL_SCL_3V3,
 
+	/* reset */
+	input PORESET_n,
+
 	/* interrupt */
 	output CPLD_INTERRUPT_CFG_RCW_SRC2,
 
@@ -72,9 +75,9 @@ always @(posedge clk) begin
 	end
 end
 
+reg rst0, rst;
 always @(posedge clk)
-	counter <= counter + 23'b1;
-
+	{rst0, rst} <= {rst, ~PORESET_n};
 
 reg healthy_led;
 always @(posedge clk) begin
@@ -98,7 +101,7 @@ assign csr_do = csr_do_pwm0 |
 		csr_do_gpio1;
 
 i2c_slave i2c_slave(
-	.rst(1'b0),
+	.rst(rst),
 	.clk(clk),
 
 	.sda(I2C_LOCAL_SDA_3V3),
@@ -114,7 +117,7 @@ i2c_slave i2c_slave(
 pwm #(
 	.BASE_ADDR(5'hc)
 ) pwm0 (
-	.rst(1'b0),
+	.rst(rst),
 	.clk(clk),
 	.pwm_ce(ce_32khz),
 
@@ -130,7 +133,7 @@ wire pwm1_en;
 pwm #(
 	.BASE_ADDR(5'he)
 ) pwm1 (
-	.rst(1'b0),
+	.rst(rst),
 	.clk(clk),
 	.pwm_ce(ce_32khz),
 
