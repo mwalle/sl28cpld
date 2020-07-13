@@ -11,9 +11,13 @@ module sl28_top(
 	/* interrupt */
 	output CPLD_INTERRUPT_CFG_RCW_SRC2,
 
+	/* board control & interrupt */
 	output PWR_FORCE_DISABLE_n,
-	output LCD0_BKLT_PWM_3V3,
+	output reg SER2_TX_CFG_RCW_SRC0,
+	output reg SER1_TX_CFG_RCW_SRC1,
+	output reg CPLD_INTERRUPT_CFG_RCW_SRC2,
 
+	output LCD0_BKLT_PWM_3V3,
 
 	/* GPIO */
 	inout GPIO0_CAM0_PWR_n,
@@ -75,9 +79,27 @@ always @(posedge clk) begin
 	end
 end
 
+wire force_recovery = ~FORCE_RECOV_n;
 reg rst0, rst;
 always @(posedge clk)
 	{rst0, rst} <= {rst, ~PORESET_n};
+wire drive_rcw_src = !force_recovery & (rst0 | rst);
+
+wire irq_out;
+always @(*) begin
+	SER2_TX_CFG_RCW_SRC0 = 1'bz;
+	SER1_TX_CFG_RCW_SRC1 = 1'bz;
+	CPLD_INTERRUPT_CFG_RCW_SRC2 = 1'bz;
+
+	if (!force_recovery) begin
+		if (drive_rcw_src) begin
+			SER2_TX_CFG_RCW_SRC0 = 1'b0;
+			SER1_TX_CFG_RCW_SRC1 = 1'b1;
+			CPLD_INTERRUPT_CFG_RCW_SRC2 = 1'b0;
+		end
+		CPLD_INTERRUPT_CFG_RCW_SRC2 = irq_out;
+	end
+end
 
 reg healthy_led;
 always @(posedge clk) begin
@@ -212,6 +234,6 @@ assign gpio1_in[1] = GPIO9;
 assign gpio1_in[2] = GPIO10;
 assign gpio1_in[3] = GPIO11;
 
-assign CPLD_INTERRUPT_CFG_RCW_SRC2 = gpio0_irq | gpio1_irq;
+assign irq_out = gpio0_irq | gpio1_irq;
 
 endmodule

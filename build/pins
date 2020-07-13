@@ -10,6 +10,10 @@ set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to I2C_L
 set_location_assignment PIN_H3 -to I2C_LOCAL_SCL_3V3
 set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to I2C_LOCAL_SCL_3V3
 
+set_location_assignment PIN_A5 -to SER2_TX_CFG_RCW_SRC0
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SER2_TX_CFG_RCW_SRC0
+set_location_assignment PIN_F9 -to SER1_TX_CFG_RCW_SRC1
+set_instance_assignment -name IO_STANDARD "1.8 V" -to SER1_TX_CFG_RCW_SRC1
 set_location_assignment PIN_B3 -to CPLD_INTERRUPT_CFG_RCW_SRC2
 set_instance_assignment -name IO_STANDARD "1.8 V" -to CPLD_INTERRUPT_CFG_RCW_SRC2
 
@@ -39,5 +43,10 @@ set_location_assignment PIN_K11 -to GPIO11
 set_instance_assignment -name IO_STANDARD "1.8 V" -to GPIO11
 
 set_location_assignment PIN_K9 -to PWR_FORCE_DISABLE_n
+
+set_location_assignment PIN_B2 -to FORCE_RECOV_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to FORCE_RECOV_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to FORCE_RECOV_n
+
 set_location_assignment PIN_L11 -to LCD0_BKLT_PWM_3V3
 
