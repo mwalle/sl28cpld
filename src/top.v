@@ -48,13 +48,40 @@ altufm_none ufm(
 	.rtpbusy()
 );
 
-/*
-reg [22:0] counter;
+/* generate slow clocks */
+reg [7:0] cnt_32khz;
+reg ce_32khz;
+always @(posedge clk) begin
+	cnt_32khz <= cnt_32khz + 8'd1;
+	ce_32khz <= 1'b0;
+	if (cnt_32khz == 8'h90) begin
+		cnt_32khz <= 8'd0;
+		ce_32khz <= 1'b1;
+	end
+end
+
+reg [14:0] cnt_1s;
+reg ce_1s;
+always @(posedge clk) begin
+	ce_1s <= 1'b0;
+	if (ce_32khz)
+		cnt_1s <= cnt_1s + 15'd1;
+	if (cnt_1s == 15'h7d00) begin
+		cnt_1s <= 15'd0;
+		ce_1s <= 1'b1;
+	end
+end
+
 always @(posedge clk)
 	counter <= counter + 23'b1;
 
-assign HEALTHY_LED = counter[22];
-*/
+
+reg healthy_led;
+always @(posedge clk) begin
+	if (ce_1s)
+		healthy_led <= ~healthy_led;
+end
+assign HEALTHY_LED = healthy_led;
 
 wire [4:0] csr_a;
 wire [7:0] csr_di;
@@ -84,46 +111,35 @@ i2c_slave i2c_slave(
 );
 
 
-reg [7:0] clk_count;
-reg pwm_ce;
-always @(posedge clk) begin
-	clk_count <= clk_count + 8'h1;
-	pwm_ce <= 1'b0;
-	if (clk_count == 8'h90) begin
-		clk_count <= 8'h0;
-		pwm_ce <= 1'b1;
-	end
-end
-
-wire pwm0_out;
-wire pwm0_en;
 pwm #(
 	.BASE_ADDR(5'hc)
 ) pwm0 (
 	.rst(1'b0),
 	.clk(clk),
-	.pwm_ce(pwm_ce),
+	.pwm_ce(ce_32khz),
 
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do_pwm0),
-	.pwm_en(pwm0_en),
-	.pwm_out(pwm0_out)
+	.pwm_out(LCD0_BKLT_PWM_3V3)
 );
 
+wire pwm1_out;
+wire pwm1_en;
 pwm #(
 	.BASE_ADDR(5'he)
 ) pwm1 (
 	.rst(1'b0),
 	.clk(clk),
-	.pwm_ce(pwm_ce),
+	.pwm_ce(ce_32khz),
 
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do_pwm1),
-	.pwm_out(LCD0_BKLT_PWM_3V3)
+	.pwm_en(pwm1_en),
+	.pwm_out(pwm1_out)
 );
 
 wire [7:0] gpio0_out;
