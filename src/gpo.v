@@ -1,6 +1,7 @@
 module gpo #(
 	parameter BASE_ADDR = 5'b0,
-	parameter NUM_GPIOS = 8
+	parameter NUM_GPIOS = 8,
+	parameter DFL_STATE = {NUM_GPIOS {1'b0}}
 ) (
 	input rst,
 	input clk,
@@ -21,7 +22,7 @@ end
 
 always @(posedge clk) begin
 	if (rst)
-		out <= {NUM_GPIOS {1'b0}};
+		out <= DFL_STATE;
 	else if (csr_a == BASE_ADDR & csr_we)
 		out <= csr_di[NUM_GPIOS-1:0];
 end

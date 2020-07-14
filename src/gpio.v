@@ -1,6 +1,8 @@
 module gpio #(
 	parameter BASE_ADDR = 5'b0,
-	parameter NUM_GPIOS = 8
+	parameter NUM_GPIOS = 8,
+	parameter DFL_STATE = {NUM_GPIOS {1'b0}},
+	parameter DFL_OE = {NUM_GPIOS {1'b0}}
 ) (
 	input rst,
 	input clk,
@@ -41,8 +43,8 @@ end
 
 always @(posedge clk) begin
 	if (rst) begin
-		oe <= {NUM_GPIOS {1'b0}};
-		out <= {NUM_GPIOS {1'b0}};
+		oe <= DFL_OE;
+		out <= DFL_STATE;
 		ie <= {NUM_GPIOS {1'b0}};
 		ip <= {NUM_GPIOS {1'b0}};
 		irq <= 1'b0;
