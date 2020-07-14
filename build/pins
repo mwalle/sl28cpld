@@ -86,3 +86,6 @@ set_location_assignment PIN_G2 -to USB3_EN_OC_n
 set_location_assignment PIN_K4 -to USB3_PWRFAULT_3V3
 set_location_assignment PIN_A2 -to USB3_DRVVBUS
 set_instance_assignment -name IO_STANDARD "1.8 V" -to USB3_DRVVBUS
+
+set_location_assignment PIN_D10 -to WDT_TIME_OUT_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to WDT_TIME_OUT_n

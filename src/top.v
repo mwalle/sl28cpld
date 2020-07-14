@@ -14,6 +14,9 @@ module sl28_top(
 	output reg SER1_TX_CFG_RCW_SRC1,
 	output reg CPLD_INTERRUPT_CFG_RCW_SRC2,
 
+	/* watchdog */
+	output WDT_TIME_OUT_n,
+
 	/* GPIO */
 	inout GPIO0_CAM0_PWR_n,
 	inout GPIO1_CAM1_PWR_n,
@@ -125,6 +128,7 @@ wire [7:0] csr_di;
 wire csr_we;
 wire [7:0] csr_do;
 reg [7:0] csr_do_rcw_ctrl;
+wire [7:0] csr_do_wdt;
 wire [7:0] csr_do_pwm0;
 wire [7:0] csr_do_pwm1;
 wire [7:0] csr_do_gpio0;
@@ -133,6 +137,7 @@ wire [7:0] csr_do_gpo;
 wire [7:0] csr_do_gpi;
 wire [7:0] csr_do_tacho;
 assign csr_do = csr_do_rcw_ctrl |
+		csr_do_wdt |
 		csr_do_pwm0 |
 		csr_do_pwm1 |
 		csr_do_gpio0 |
@@ -154,6 +159,26 @@ i2c_slave i2c_slave(
 	.csr_do(csr_di)
 );
 
+wire [1:0] wdt_out;
+watchdog #(
+	.BASE_ADDR(5'h4),
+	.DFL_TIMEOUT(8'h06),
+	.DFL_OE(2'b01)
+) watchdog (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_wdt),
+
+	.wdt_ce(ce_1hz),
+	.wdt_out(wdt_out),
+	.force_recovery_mode(),
+	.irq_out()
+);
+assign WDT_TIME_OUT_n = ~wdt_out[1];
 
 pwm #(
 	.BASE_ADDR(5'hc)

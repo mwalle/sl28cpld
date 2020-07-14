@@ -7,7 +7,7 @@ BOARDFILE = pins
 
 SRCS  = ../src/top.v ../src/i2c_slave.v ../src/pwm.v ../src/gpio.v
 SRCS += ../src/gpi.v ../src/gpo.v ../src/tacho.v ../src/usbfixer.v
-SRCS += ../src/clockgen.v
+SRCS += ../src/clockgen.v ../src/watchdog.v
 
 all: $(PROJECT).jbc summary
 
