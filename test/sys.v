@@ -2,7 +2,7 @@ reg rst;
 reg clk;
 
 initial clk = 1'b0;
-always #100 clk = ~clk;
+always #108 clk = ~clk;
 
 task waitclock;
 begin
