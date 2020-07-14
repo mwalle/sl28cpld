@@ -67,23 +67,6 @@ wire clk;
 
 assign PWR_FORCE_DISABLE_n = 1'bz;
 
-altufm_none ufm(
-	.arclk(1'b0),
-	.ardin(1'b0),
-	.arshft(1'b0),
-	.drclk(1'b0),
-	.drdin(1'b0),
-	.drshft(1'b0),
-	.erase(1'b0),
-	.oscena(1'b1),
-	.program(1'b0),
-
-	.busy(),
-	.drdout(),
-	.osc(clk),
-	.rtpbusy()
-);
-
 wire ce_32khz;
 wire ce_8hz;
 wire ce_1hz;
@@ -127,7 +110,7 @@ wire [4:0] csr_a;
 wire [7:0] csr_di;
 wire csr_we;
 wire [7:0] csr_do;
-reg [7:0] csr_do_rcw_ctrl;
+wire [7:0] csr_do_cfg_ctrl;
 wire [7:0] csr_do_wdt;
 wire [7:0] csr_do_pwm0;
 wire [7:0] csr_do_pwm1;
@@ -136,7 +119,7 @@ wire [7:0] csr_do_gpio1;
 wire [7:0] csr_do_gpo;
 wire [7:0] csr_do_gpi;
 wire [7:0] csr_do_tacho;
-assign csr_do = csr_do_rcw_ctrl |
+assign csr_do = csr_do_cfg_ctrl |
 		csr_do_wdt |
 		csr_do_pwm0 |
 		csr_do_pwm1 |
@@ -157,6 +140,22 @@ i2c_slave i2c_slave(
 	.csr_di(csr_do),
 	.csr_we(csr_we),
 	.csr_do(csr_di)
+);
+
+cfg_ctrl_altera_ufm #(
+	.BASE_ADDR(5'h0)
+) cfg_ctrl (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_cfg_ctrl),
+
+	.start(1'b0),
+	.done(),
+	.osc(clk)
 );
 
 wire [1:0] wdt_out;
@@ -338,12 +337,6 @@ tacho #(
 	.ce_1hz(ce_1hz),
 	.tacho_in(GPIO6_TACHIN)
 );
-
-always @(posedge clk) begin
-	csr_do_rcw_ctrl = 8'h00;
-	if (csr_a[4:1] == 4'b0)
-		csr_do_rcw_ctrl = 8'hff;
-end
 
 assign irq_out = gpio0_irq | gpio1_irq;
 
