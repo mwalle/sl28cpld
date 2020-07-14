@@ -9,7 +9,7 @@ module tacho #(
 	input csr_we,
 	output [7:0] csr_do,
 
-	input ce_1s,
+	input ce_1hz,
 	input tacho_in
 );
 
@@ -33,7 +33,7 @@ always @(posedge clk) begin
 		if (rising_edge)
 			counter <= counter + 10'd1;
 
-		if (ce_1s) begin
+		if (ce_1hz) begin
 			counter0 <= counter;
 			counter <= 10'd0;
 		end

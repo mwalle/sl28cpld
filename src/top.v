@@ -81,29 +81,15 @@ altufm_none ufm(
 	.rtpbusy()
 );
 
-/* generate slow clocks */
-reg [7:0] cnt_32khz;
-reg ce_32khz;
-always @(posedge clk) begin
-	cnt_32khz <= cnt_32khz + 8'd1;
-	ce_32khz <= 1'b0;
-	if (cnt_32khz == 8'h90) begin
-		cnt_32khz <= 8'd0;
-		ce_32khz <= 1'b1;
-	end
-end
-
-reg [14:0] cnt_1s;
-reg ce_1s;
-always @(posedge clk) begin
-	ce_1s <= 1'b0;
-	if (ce_32khz)
-		cnt_1s <= cnt_1s + 15'd1;
-	if (cnt_1s == 15'h7d00) begin
-		cnt_1s <= 15'd0;
-		ce_1s <= 1'b1;
-	end
-end
+wire ce_32khz;
+wire ce_8hz;
+wire ce_1hz;
+clockgen clockgen (
+	.clk(clk),
+	.ce_32khz(ce_32khz),
+	.ce_8hz(ce_8hz),
+	.ce_1hz(ce_1hz)
+);
 
 wire force_recovery = ~FORCE_RECOV_n;
 reg rst0, rst;
@@ -129,7 +115,7 @@ end
 
 reg healthy_led;
 always @(posedge clk) begin
-	if (ce_1s)
+	if (ce_1hz)
 		healthy_led <= ~healthy_led;
 end
 assign HEALTHY_LED = healthy_led;
@@ -323,7 +309,7 @@ tacho #(
 	.csr_we(csr_we),
 	.csr_do(csr_do_tacho),
 
-	.ce_1s(ce_1s),
+	.ce_1hz(ce_1hz),
 	.tacho_in(GPIO6_TACHIN)
 );
 
