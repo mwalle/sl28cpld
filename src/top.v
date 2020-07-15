@@ -45,8 +45,19 @@ module sl28_top(
 	input CHARGING_n,
 	input CHARGER_PRSNT_n,
 
+	/* USB control */
+	inout USB3_EN_OC_n,
+	input USB3_DRVVBUS,
+	output USB3_PWRFAULT_3V3,
+
 	/* PWM */
 	output LCD0_BKLT_PWM_3V3
+);
+
+usbfixer usbfixer (
+	.usb_en_oc_n(USB3_EN_OC_n),
+	.usb_drvvbus(USB3_DRVVBUS),
+	.usb_pwrfault(USB3_PWRFAULT_3V3)
 );
 
 wire clk;

@@ -81,3 +81,8 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to CHARGER_PRSNT_n
 set_location_assignment PIN_L11 -to LCD0_BKLT_PWM_3V3
 
 set_location_assignment PIN_K9 -to PWR_FORCE_DISABLE_n
+
+set_location_assignment PIN_G2 -to USB3_EN_OC_n
+set_location_assignment PIN_K4 -to USB3_PWRFAULT_3V3
+set_location_assignment PIN_A2 -to USB3_DRVVBUS
+set_instance_assignment -name IO_STANDARD "1.8 V" -to USB3_DRVVBUS
