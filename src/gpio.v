@@ -28,19 +28,15 @@ wire [NUM_GPIOS-1:0] in_edge = in2 ^ in1;
 
 reg [NUM_GPIOS-1:0] ie;
 reg [NUM_GPIOS-1:0] ip;
-always @(posedge clk) begin
-	if (rst)
-		csr_do <= {NUM_GPIOS {1'b0}};
-	else begin
-		csr_do <= 8'b0;
-		case (csr_a)
-			BASE_ADDR + 5'h0: csr_do <= oe;
-			BASE_ADDR + 5'h1: csr_do <= out;
-			BASE_ADDR + 5'h2: csr_do <= in1;
-			BASE_ADDR + 5'h3: csr_do <= ie;
-			BASE_ADDR + 5'h4: csr_do <= ip;
-		endcase
-	end
+always @(*) begin
+	csr_do = 8'b0;
+	case (csr_a)
+		BASE_ADDR + 5'h0: csr_do = {{8-NUM_GPIOS {1'b0}}, oe};
+		BASE_ADDR + 5'h1: csr_do = {{8-NUM_GPIOS {1'b0}}, out};
+		BASE_ADDR + 5'h2: csr_do = {{8-NUM_GPIOS {1'b0}}, in1};
+		BASE_ADDR + 5'h3: csr_do = {{8-NUM_GPIOS {1'b0}}, ie};
+		BASE_ADDR + 5'h4: csr_do = {{8-NUM_GPIOS {1'b0}}, ip};
+	endcase
 end
 
 always @(posedge clk) begin

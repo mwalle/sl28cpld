@@ -22,14 +22,10 @@ always @(posedge clk) begin
 		in0 <= in;
 end
 
-always @(posedge clk) begin
-	if (rst)
-		csr_do <= {NUM_GPIOS {1'b0}};
-	else begin
-		csr_do <= 8'b0;;
-		if (csr_a == BASE_ADDR)
-			csr_do <= in0;
-	end
+always @(*) begin
+	csr_do = {NUM_GPIOS {1'b0}};
+	if (csr_a == BASE_ADDR)
+		csr_do = {{8-NUM_GPIOS {1'b0}}, in0};
 end
 
 endmodule

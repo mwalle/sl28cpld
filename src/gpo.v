@@ -13,14 +13,10 @@ module gpo #(
 	output reg [NUM_GPIOS-1:0] out
 );
 
-always @(posedge clk) begin
-	if (rst)
-		csr_do <= {NUM_GPIOS {1'b0}};
-	else begin
-		csr_do <= 8'b0;
-		if (csr_a == BASE_ADDR)
-			csr_do <= out;
-	end
+always @(*) begin
+	csr_do = 8'b0;
+	if (csr_a == BASE_ADDR)
+		csr_do = {{8-NUM_GPIOS {1'b0}}, out};
 end
 
 always @(posedge clk) begin

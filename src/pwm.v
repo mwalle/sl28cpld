@@ -14,6 +14,15 @@ module pwm #(
 	output pwm_out
 );
 
+
+always @(*) begin
+	csr_do = 8'b0;
+	case (csr_a)
+		BASE_ADDR + 5'h0: csr_do = {pwm_en, 5'b0, pwm_scale};
+		BASE_ADDR + 5'h1: csr_do = {1'b0, duty_cycle};
+	endcase
+end
+
 reg [1:0] pwm_scale;
 reg [6:0] duty_cycle;
 always @(posedge clk) begin
@@ -22,16 +31,11 @@ always @(posedge clk) begin
 		pwm_scale <= 2'b0;
 		duty_cycle <= 7'h00;
 	end else begin
-		csr_do <= 8'b0;
-		if (csr_a == BASE_ADDR) begin
-			csr_do <= {pwm_en, 5'b0, pwm_scale};
-			if (csr_we)
-				{pwm_en, pwm_scale} <= {csr_di[7], csr_di[1:0]};
-		end
-		if (csr_a == BASE_ADDR + 1) begin
-			csr_do <= {1'b0, duty_cycle};
-			if (csr_we)
-				duty_cycle <= csr_di[6:0];
+		if (csr_we) begin
+			case (csr_a)
+				BASE_ADDR + 5'h0: {pwm_en, pwm_scale} <= {csr_di[7], csr_di[1:0]};
+				BASE_ADDR + 5'h1: duty_cycle <= csr_di[6:0];
+			endcase
 		end
 	end
 end
