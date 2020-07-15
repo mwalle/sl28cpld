@@ -4,7 +4,8 @@ module i2c_slave #(
 	input rst,
 	input clk,
 
-	inout sda,
+	input sda,
+	output reg sda_out,
 	input scl,
 
 	output [4:0] csr_a,
@@ -12,9 +13,6 @@ module i2c_slave #(
 	output csr_we,
 	output [7:0] csr_do
 );
-
-reg sda_out;
-assign sda = sda_out ? 1'bz : 1'b0;
 
 /* synchronize inputs & edge detect*/
 reg scl_r;
@@ -56,7 +54,7 @@ wire read_write = input_shift[0];
 wire master_ack = ~sda_in[1];
 
 /* I2C state machine */
-localparam [2:0] IDLE     = 2'd0,
+localparam [2:0] IDLE     = 3'd0,
 		 DEV_ADDR = 3'd1,
 		 READ     = 3'd2,
 		 IDX_PTR  = 3'd3,

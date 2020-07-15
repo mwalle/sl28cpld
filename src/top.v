@@ -138,11 +138,13 @@ assign csr_do = csr_do_cfg_ctrl |
 		csr_do_tacho |
 		csr_do_gpi;
 
+wire sda_out;
 i2c_slave i2c_slave(
 	.rst(rst),
 	.clk(clk),
 
 	.sda(I2C_LOCAL_SDA_3V3),
+	.sda_out(sda_out),
 	.scl(I2C_LOCAL_SCL_3V3),
 
 	.csr_a(csr_a),
@@ -150,6 +152,8 @@ i2c_slave i2c_slave(
 	.csr_we(csr_we),
 	.csr_do(csr_di)
 );
+assign I2C_LOCAL_SDA_3V3 = sda_out ? 1'bz : 1'b0;
+
 
 cfg_ctrl_altera_ufm #(
 	.BASE_ADDR(5'h0)

@@ -4,30 +4,26 @@ module tb_i2c_slave();
 `include "sys.v"
 
 wire sda_i;
-wire scl_i;
-
 wire [4:0] csr_a;
 reg [7:0] csr_di;
 wire csr_we;
 wire [7:0] csr_do;
+reg scl;
 
 i2c_slave dut(
 	.rst(rst),
 	.clk(clk),
 	.sda(sda_i),
-	.scl(scl_i),
+	.sda_out(sda_out),
+	.scl(scl),
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do)
 );
 
-pullup(sda_i);
-pullup(scl_i);
 reg sda;
-reg scl;
-assign sda_i = sda ? 1'bz : 1'b0;
-assign scl_i = scl ? 1'bz : 1'b0;
+assign sda_i = sda & sda_out;
 
 task i2c_start;
 begin
