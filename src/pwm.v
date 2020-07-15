@@ -51,14 +51,16 @@ always @(*) begin
 end
 
 reg [7:0] pwm_counter;
+reg [6:0] active_duty_cycle;
 always @(posedge clk) begin
-	if (rst || pwm_reset)
+	if (rst || pwm_reset) begin
 		pwm_counter <= 8'd1;
-	else if (pwm_ce)
+		active_duty_cycle <= duty_cycle;
+	end else if (pwm_ce)
 		pwm_counter <= pwm_counter + 8'b1;
 end
 
-wire pwm_match = pwm_counter == duty_cycle;
+wire pwm_match = pwm_counter == active_duty_cycle;
 reg pwm_out_int;
 always @(posedge clk) begin
 	if (rst || pwm_reset)
