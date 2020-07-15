@@ -3,8 +3,7 @@ module tb_watchdog();
 
 `include "sys.v"
 `include "csr.v"
-
-wire ce;
+`include "slowclock.v"
 
 watchdog #(
 	.DFL_TIMEOUT(8'h3)
@@ -17,18 +16,8 @@ watchdog #(
 	.csr_we(csr_we),
 	.csr_do(csr_do),
 
-	.wdt_ce(ce)
+	.wdt_ce(slowclk_ce)
 );
-
-reg [5:0] slowclk_cnt;
-assign ce = slowclk_cnt == 6'h20;
-
-always @(posedge clk) begin
-	if (rst)
-		slowclk_cnt <= 6'b0;
-	else
-		slowclk_cnt <= slowclk_cnt + 6'd1;
-end
 
 initial begin
 	waitreset;

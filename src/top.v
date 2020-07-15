@@ -5,7 +5,7 @@ module sl28_top #(
 
 	/* I2C bus */
 	inout I2C_LOCAL_SDA_3V3,
-	input I2C_LOCAL_SCL_3V3,
+	inout I2C_LOCAL_SCL_3V3,
 
 	/* reset */
 	input PORESET_n,
@@ -87,6 +87,7 @@ reg rst0, rst;
 always @(posedge clk)
 	{rst0, rst} <= {rst, ~PORESET_n};
 wire drive_rcw_src = !force_recovery & (rst0 | rst);
+wire start_i2c_bus_reset = rst0 & !rst;
 
 wire irq_out;
 always @(*) begin
@@ -103,6 +104,19 @@ always @(*) begin
 		CPLD_INTERRUPT_CFG_RCW_SRC2 = irq_out;
 	end
 end
+
+wire i2c_bus_reset_sda_out;
+wire i2c_bus_reset_scl_out;
+i2c_bus_reset i2c_bus_reset (
+	.clk(clk),
+	.ce(ce_32khz),
+
+	.sda(I2C_LOCAL_SDA_3V3),
+	.sda_out(i2c_bus_reset_sda_out),
+	.scl_out(i2c_bus_reset_scl_out),
+
+	.start(start_i2c_bus_reset)
+);
 
 reg healthy_led;
 always @(posedge clk) begin
@@ -138,13 +152,13 @@ assign csr_do = csr_do_cfg_ctrl |
 		csr_do_tacho |
 		csr_do_gpi;
 
-wire sda_out;
+wire i2c_slave_sda_out;
 i2c_slave i2c_slave(
 	.rst(rst),
 	.clk(clk),
 
 	.sda(I2C_LOCAL_SDA_3V3),
-	.sda_out(sda_out),
+	.sda_out(i2c_slave_sda_out),
 	.scl(I2C_LOCAL_SCL_3V3),
 
 	.csr_a(csr_a),
@@ -152,8 +166,6 @@ i2c_slave i2c_slave(
 	.csr_we(csr_we),
 	.csr_do(csr_di)
 );
-assign I2C_LOCAL_SDA_3V3 = sda_out ? 1'bz : 1'b0;
-
 
 cfg_ctrl_altera_ufm #(
 	.BASE_ADDR(5'h0)
@@ -372,6 +384,11 @@ gpi #(
 		POWER_BTN_n
 	})
 );
+
+wire sda_out = i2c_bus_reset_sda_out & i2c_slave_sda_out;
+wire scl_out = i2c_bus_reset_scl_out;
+assign I2C_LOCAL_SDA_3V3 = sda_out ? 1'bz : 1'b0;
+assign I2C_LOCAL_SCL_3V3 = scl_out ? 1'bz : 1'b0;
 
 assign irq_out = gpio0_irq | gpio1_irq;
 
