@@ -6,7 +6,7 @@ PART = 5M570ZM100I5
 BOARDFILE = pins
 
 SRCS  = ../src/top.v ../src/i2c_slave.v ../src/pwm.v ../src/gpio.v
-SRCS += ../src/gpi.v ../src/gpo.v
+SRCS += ../src/gpi.v ../src/gpo.v ../src/tacho.v
 
 all: $(PROJECT).jbc summary
 

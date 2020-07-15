@@ -10,7 +10,7 @@ module tacho #(
 	output [7:0] csr_do,
 
 	input ce_1s,
-	input tacho_in,
+	input tacho_in
 );
 
 /* synchonize & edge detect */
@@ -40,19 +40,9 @@ always @(posedge clk) begin
 	end
 end
 
-assign tacho_scale = counter0[9] | counter0[8] | counter[7];
-assign tacho_count = (tacho_scale) ? counter[9:3] : counter[6:0];
-assign data_out = {tacho_scale, tacho_count};
+wire tacho_scale = counter0[9] | counter0[8] | counter[7];
+wire [6:0] tacho_count = (tacho_scale) ? counter0[9:3] : counter0[6:0];
+wire [7:0] data_out = {tacho_scale, tacho_count};
 assign csr_do = (csr_a == BASE_ADDR) ? data_out : 8'b0;
-
-reg pwm_reset;
-always @(*) begin
-	case (pwm_scale[1:0])
-		2'b00: pwm_reset = pwm_counter[7];
-		2'b01: pwm_reset = pwm_counter[6];
-		2'b10: pwm_reset = pwm_counter[5];
-		2'b11: pwm_reset = pwm_counter[4];
-	endcase
-end
 
 endmodule

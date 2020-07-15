@@ -134,12 +134,14 @@ wire [7:0] csr_do_gpio0;
 wire [7:0] csr_do_gpio1;
 wire [7:0] csr_do_gpo;
 wire [7:0] csr_do_gpi;
+wire [7:0] csr_do_tacho;
 assign csr_do = csr_do_rcw_ctrl |
 		csr_do_pwm0 |
 		csr_do_pwm1 |
 		csr_do_gpio0 |
 		csr_do_gpio1 |
 		csr_do_gpo |
+		csr_do_tacho |
 		csr_do_gpi;
 
 i2c_slave i2c_slave(
@@ -297,6 +299,21 @@ gpi #(
 		FORCE_RECOV_n,
 		POWER_BTN_n
 	})
+);
+
+tacho #(
+	.BASE_ADDR(5'hb)
+) tacho (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_tacho),
+
+	.ce_1s(ce_1s),
+	.tacho_in(GPIO6_TACHIN)
 );
 
 always @(posedge clk) begin
