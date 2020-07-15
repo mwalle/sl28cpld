@@ -89,3 +89,16 @@ set_instance_assignment -name IO_STANDARD "1.8 V" -to USB3_DRVVBUS
 
 set_location_assignment PIN_D10 -to WDT_TIME_OUT_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to WDT_TIME_OUT_n
+
+set_location_assignment PIN_G1 -to BOARD_CONFIG[0]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[0]
+set_location_assignment PIN_F1 -to BOARD_CONFIG[1]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[1]
+set_location_assignment PIN_D1 -to BOARD_CONFIG[2]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[2]
+set_location_assignment PIN_F3 -to BOARD_CONFIG[3]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[3]
+set_location_assignment PIN_C2 -to BOARD_CONFIG[4]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[4]
+set_location_assignment PIN_K3 -to BOARD_CONFIG[5]
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[5]

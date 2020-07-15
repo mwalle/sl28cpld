@@ -1,4 +1,6 @@
-module sl28_top(
+module sl28_top #(
+	CPLD_VERSION = 8'h20
+) (
 	output HEALTHY_LED,
 
 	/* I2C bus */
@@ -54,7 +56,10 @@ module sl28_top(
 	output USB3_PWRFAULT_3V3,
 
 	/* PWM */
-	output LCD0_BKLT_PWM_3V3
+	output LCD0_BKLT_PWM_3V3,
+
+	/* board config */
+	input [5:0] BOARD_CONFIG
 );
 
 usbfixer usbfixer (
@@ -111,7 +116,9 @@ wire [7:0] csr_di;
 wire csr_we;
 wire [7:0] csr_do;
 wire [7:0] csr_do_cfg_ctrl;
+wire [7:0] csr_do_cpld_version;
 wire [7:0] csr_do_wdt;
+wire [7:0] csr_do_brd_variant;
 wire [7:0] csr_do_pwm0;
 wire [7:0] csr_do_pwm1;
 wire [7:0] csr_do_gpio0;
@@ -120,7 +127,9 @@ wire [7:0] csr_do_gpo;
 wire [7:0] csr_do_gpi;
 wire [7:0] csr_do_tacho;
 assign csr_do = csr_do_cfg_ctrl |
+		csr_do_cpld_version |
 		csr_do_wdt |
+		csr_do_brd_variant |
 		csr_do_pwm0 |
 		csr_do_pwm1 |
 		csr_do_gpio0 |
@@ -158,6 +167,17 @@ cfg_ctrl_altera_ufm #(
 	.osc(clk)
 );
 
+ro_reg #(
+	.BASE_ADDR(5'h3)
+) cpld_version (
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_cpld_version),
+
+	.in(CPLD_VERSION)
+);
+
 wire [1:0] wdt_out;
 watchdog #(
 	.BASE_ADDR(5'h4),
@@ -178,6 +198,32 @@ watchdog #(
 	.irq_out()
 );
 assign WDT_TIME_OUT_n = ~wdt_out[1];
+
+ro_reg #(
+	.BASE_ADDR(5'h9)
+) brd_variant (
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_brd_variant),
+
+	.in({2'b0, BOARD_CONFIG})
+);
+
+tacho #(
+	.BASE_ADDR(5'hb)
+) tacho (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_tacho),
+
+	.ce_1hz(ce_1hz),
+	.tacho_in(GPIO6_TACHIN)
+);
 
 pwm #(
 	.BASE_ADDR(5'hc)
@@ -321,21 +367,6 @@ gpi #(
 		FORCE_RECOV_n,
 		POWER_BTN_n
 	})
-);
-
-tacho #(
-	.BASE_ADDR(5'hb)
-) tacho (
-	.rst(rst),
-	.clk(clk),
-
-	.csr_a(csr_a),
-	.csr_di(csr_di),
-	.csr_we(csr_we),
-	.csr_do(csr_do_tacho),
-
-	.ce_1hz(ce_1hz),
-	.tacho_in(GPIO6_TACHIN)
 );
 
 assign irq_out = gpio0_irq | gpio1_irq;
