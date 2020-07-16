@@ -144,7 +144,7 @@ i2c_bus_reset i2c_bus_reset (
 	.sda_out(i2c_bus_reset_sda_out),
 	.scl_out(i2c_bus_reset_scl_out),
 
-	.start(rst_negedge)
+	.start(rst_posedge)
 );
 
 reg healthy_led;
