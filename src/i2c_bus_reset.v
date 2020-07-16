@@ -27,11 +27,13 @@ always @(posedge clk) begin
 		case (state)
 		CLOCK_SCL0:
 			state <= CLOCK_SCL1;
+
 		CLOCK_SCL1:
 			if (sda)
 				state <= STROBE_SDA;
 			else
 				state <= CLOCK_SCL0;
+
 		STROBE_SDA:
 			state <= IDLE;
 		endcase
