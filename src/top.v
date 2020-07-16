@@ -342,7 +342,7 @@ assign gpio1_in[3] = GPIO11;
 gpo #(
 	.BASE_ADDR(5'h1a),
 	.NUM_GPIOS(6),
-	.DFL_STATE(5'b110001)
+	.DFL_STATE(6'b110001)
 ) gpo (
 	.rst(rst),
 	.clk(clk),
