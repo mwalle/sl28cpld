@@ -10,13 +10,16 @@ watchdog #(
 ) dut(
 	.rst(rst),
 	.clk(clk),
+	.ce(slowclk_ce),
 
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do),
 
-	.wdt_ce(slowclk_ce)
+	.wdt_out(),
+	.force_recovery_mode(),
+	.irq()
 );
 
 initial begin

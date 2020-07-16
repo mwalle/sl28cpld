@@ -12,7 +12,8 @@ power_fsm #(
 	.LONG_PRESS_DELAY(3'd5)
 ) dut (
 	.clk(clk),
-	.ce(slowclk_ce),
+	.ce_1hz(slowclk_ce),
+	.ce_8hz(slowclk_ce),
 
 	.start(start),
 	.initial_pwr_off(initial_pwr_off),
