@@ -129,6 +129,7 @@ end
 wire drive_rcw_src = rst | rst0;
 
 wire [2:0] rcw_src = 3'b010;
+wire irq_out;
 assign SER2_TX_CFG_RCW_SRC0 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[0] : 1'bz;
 assign SER1_TX_CFG_RCW_SRC1 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[1] : 1'bz;
 assign CPLD_INTERRUPT_CFG_RCW_SRC2 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[2] : irq_out;
@@ -523,7 +524,7 @@ gpi #(
 	})
 );
 
-
+wire intc_irq;
 intc #(
 	.BASE_ADDR(5'h1c),
 	.NUM_INTS(7)
@@ -544,7 +545,8 @@ intc #(
 		1'b0, /* ESPI_ALERT0_n not supported */
 		smb_alert_negedge,
 		rtc_int_negedge
-	})
+	}),
+	.irq(intc_irq)
 );
 
 wire sda_out = i2c_bus_reset_sda_out & i2c_slave_sda_out;
@@ -552,6 +554,6 @@ wire scl_out = i2c_bus_reset_scl_out;
 assign I2C_LOCAL_SDA_3V3 = sda_out ? 1'bz : 1'b0;
 assign I2C_LOCAL_SCL_3V3 = scl_out ? 1'bz : 1'b0;
 
-assign irq_out = gpio0_irq | gpio1_irq;
+assign irq_out = intc_irq | gpio0_irq | gpio1_irq;
 
 endmodule
