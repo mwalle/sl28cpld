@@ -1,7 +1,8 @@
 module watchdog #(
 	parameter BASE_ADDR = 5'h0,
-	parameter DFL_TIMEOUT = 8'hff,
+	parameter DFL_EN = 2'b00,
 	parameter DFL_OE = 2'b00,
+	parameter DFL_TIMEOUT = 8'hff,
 	parameter KICK_VALUE = 8'h6b
 ) (
 	input rst,
@@ -49,7 +50,7 @@ assign irq = !wdt_bite0 & wdt_bite;
 
 always @(posedge clk) begin
 	if (rst) begin
-		wdt_en <= 2'b00;
+		wdt_en <= DFL_EN;
 		wdt_oe <= DFL_OE;
 		wdt_tout <= DFL_TIMEOUT;
 		wdt_locked <= 1'b0;
