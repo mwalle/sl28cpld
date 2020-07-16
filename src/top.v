@@ -281,7 +281,7 @@ wire pcie_a_rst = rst | misc_out[3];
 wire pcie_b_rst = rst | misc_out[4];
 wire pcie_c_rst = rst | misc_out[5];
 
-assign TA_PROG_SFP_n = ta_prog_sfp ? 1'bz : 1'b0;
+assign TA_PROG_SFP_n = ta_prog_sfp ? 1'b0 : 1'bz;
 assign SPI_FLASH_DISABLE_WP = spi_flash_disable_wp ? 1'b1 : 1'bz;
 assign CARRIER_STBY_n_3V3 = carrier_standby ? 1'bz : 1'b1;
 assign PCIE_A_RST_n = !pcie_a_rst;
