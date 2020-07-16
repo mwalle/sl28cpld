@@ -93,7 +93,7 @@ reg rst0, rst;
 always @(posedge clk)
 	{rst0, rst} <= {rst, ~PORESET_n};
 wire drive_rcw_src = !force_recovery & (rst0 | rst);
-wire start_i2c_bus_reset = rst0 & !rst;
+wire rst_negedge = rst0 & !rst;
 
 wire irq_out;
 always @(*) begin
@@ -121,7 +121,7 @@ i2c_bus_reset i2c_bus_reset (
 	.sda_out(i2c_bus_reset_sda_out),
 	.scl_out(i2c_bus_reset_scl_out),
 
-	.start(start_i2c_bus_reset)
+	.start(rst_negedge)
 );
 
 reg healthy_led;
