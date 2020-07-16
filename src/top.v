@@ -76,7 +76,25 @@ usbfixer usbfixer (
 
 wire clk;
 
-assign PWR_FORCE_DISABLE_n = 1'bz;
+reg [1:0] start_cnt = 2'b0;
+always @(posedge clk)
+	start_cnt <= {start_cnt[0], 1'b1};
+wire start_strobe = start_cnt[0] ^ start_cnt[1];
+
+wire pwr_enable;
+power_fsm #(
+	.LONG_PRESS_DELAY(3'd5)
+) power_fsm (
+	.clk(clk),
+	.ce_1hz(ce_1hz),
+	.ce_8hz(ce_8hz),
+
+	.start(start_strobe),
+	.initial_pwr_off(1'b0),
+	.pwr_btn(!POWER_BTN_n),
+	.pwr_enable(pwr_enable)
+);
+assign PWR_FORCE_DISABLE_n = pwr_enable ? 1'bz : 1'b0;
 
 wire ce_32khz;
 wire ce_8hz;
