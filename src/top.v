@@ -15,6 +15,12 @@ module sl28_top #(
 	output reg SER2_TX_CFG_RCW_SRC0,
 	output reg SER1_TX_CFG_RCW_SRC1,
 	output reg CPLD_INTERRUPT_CFG_RCW_SRC2,
+	output TA_PROG_SFP_n,
+	output SPI_FLASH_DISABLE_WP,
+	output CARRIER_STBY_n_3V3,
+	output PCIE_A_RST_n,
+	output PCIE_B_RST_n,
+	output PCIE_C_RST_n,
 
 	/* watchdog */
 	output WDT_TIME_OUT_n,
@@ -133,6 +139,7 @@ wire [7:0] csr_do_cfg_ctrl;
 wire [7:0] csr_do_cpld_version;
 wire [7:0] csr_do_wdt;
 wire [7:0] csr_do_brd_variant;
+wire [7:0] csr_do_misc_ctrl;
 wire [7:0] csr_do_pwm0;
 wire [7:0] csr_do_pwm1;
 wire [7:0] csr_do_gpio0;
@@ -144,6 +151,7 @@ assign csr_do = csr_do_cfg_ctrl |
 		csr_do_cpld_version |
 		csr_do_wdt |
 		csr_do_brd_variant |
+		csr_do_misc_ctrl |
 		csr_do_pwm0 |
 		csr_do_pwm1 |
 		csr_do_gpio0 |
@@ -225,6 +233,35 @@ ro_reg #(
 
 	.in({2'b0, BOARD_CONFIG})
 );
+
+wire [5:0] misc_out;
+gpo #(
+	.BASE_ADDR(5'ha),
+	.NUM_GPIOS(6)
+) misc_ctrl (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_misc_ctrl),
+
+	.out(misc_out)
+);
+wire ta_prog_sfp = misc_out[0];
+wire spi_flash_disable_wp = misc_out[1];
+wire carrier_standby = misc_out[2];
+wire pcie_a_rst = rst | misc_out[3];
+wire pcie_b_rst = rst | misc_out[4];
+wire pcie_c_rst = rst | misc_out[5];
+
+assign TA_PROG_SFP_n = ta_prog_sfp ? 1'bz : 1'b0;
+assign SPI_FLASH_DISABLE_WP = spi_flash_disable_wp ? 1'b1 : 1'bz;
+assign CARRIER_STBY_n_3V3 = carrier_standby ? 1'bz : 1'b1;
+assign PCIE_A_RST_n = !pcie_a_rst;
+assign PCIE_B_RST_n = !pcie_b_rst;
+assign PCIE_C_RST_n = !pcie_c_rst;
 
 tacho #(
 	.BASE_ADDR(5'hb)
