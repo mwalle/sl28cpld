@@ -103,10 +103,10 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[4]
 set_location_assignment PIN_K3 -to BOARD_CONFIG[5]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[5]
 
-set_location_assignment PIN_A7 -to TA_PROG_SFP_N
-set_instance_assignment -name IO_STANDARD "1.8 V" -to TA_PROG_SFP_N
-set_instance_assignment -name CURRENT_STRENGTH_NEW 3MA -to TA_PROG_SFP_N
-set_instance_assignment -name SLOW_SLEW_RATE ON -to TA_PROG_SFP_N
+set_location_assignment PIN_A7 -to TA_PROG_SFP_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to TA_PROG_SFP_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW 3MA -to TA_PROG_SFP_n
+set_instance_assignment -name SLOW_SLEW_RATE ON -to TA_PROG_SFP_n
 
 set_location_assignment PIN_B9 -to SPI_FLASH_DISABLE_WP
 set_instance_assignment -name IO_STANDARD "1.8 V" -to SPI_FLASH_DISABLE_WP
