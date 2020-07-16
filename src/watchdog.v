@@ -6,16 +6,16 @@ module watchdog #(
 ) (
 	input rst,
 	input clk,
+	input ce,
 
 	input [4:0] csr_a,
 	input [7:0] csr_di,
 	input csr_we,
 	output reg [7:0] csr_do,
 
-	input wdt_ce,
 	output [1:0] wdt_out,
 	output force_recovery_mode,
-	output irq_out
+	output irq
 );
 
 localparam R_CTRL = 5'h0;
@@ -35,7 +35,7 @@ always @(posedge clk) begin
 		wdt_cnt <= DFL_TIMEOUT;
 	else if (wdt_kick)
 		wdt_cnt <= wdt_tout;
-	else if (wdt_ce & !wdt_bite & |wdt_en)
+	else if (ce & !wdt_bite & |wdt_en)
 		wdt_cnt <= wdt_cnt - 8'd1;
 end
 wire wdt_bite = wdt_cnt == 8'd0;

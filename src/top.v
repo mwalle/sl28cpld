@@ -227,7 +227,7 @@ ro_reg #(
 );
 
 wire [1:0] wdt_out;
-wire wdt_irq_out;
+wire wdt_irq;
 watchdog #(
 	.BASE_ADDR(5'h4),
 	.DFL_TIMEOUT(8'h06),
@@ -235,16 +235,16 @@ watchdog #(
 ) watchdog (
 	.rst(rst),
 	.clk(clk),
+	.ce(ce_1hz),
 
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do_wdt),
 
-	.wdt_ce(ce_1hz),
 	.wdt_out(wdt_out),
 	.force_recovery_mode(),
-	.irq_out(wdt_irq_out)
+	.irq(wdt_irq)
 );
 assign WDT_TIME_OUT_n = ~wdt_out[1];
 
@@ -461,7 +461,7 @@ intc #(
 	.csr_do(csr_do_intc),
 
 	.int({
-		wdt_irq_out,
+		wdt_irq,
 		SLEEP_n,
 		POWER_BTN_n,
 		1'b0, /* ESPI_ALERT1_n not supported */
