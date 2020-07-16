@@ -14,16 +14,6 @@ module intc #(
 	output reg irq
 );
 
-/* synchonize & edge detect */
-reg [NUM_INTS-1:0] int0, int1, int2;
-always @(posedge clk) begin
-	if (rst)
-		{int2, int1, int0} <= {NUM_INTS {3'b0}};
-	else
-		{int2, int1, int0} <= {int1, int0, int};
-end
-wire [NUM_INTS-1:0] int_edge = int2 ^ int1;
-
 reg [NUM_INTS-1:0] ie;
 reg [NUM_INTS-1:0] ip;
 always @(*) begin
@@ -41,8 +31,8 @@ always @(posedge clk) begin
 		irq <= 1'b0;
 	end else begin
 		irq <= 1'b0;
-		ip <= ip | int_edge;
-		if (|(int_edge & ie))
+		ip <= ip | int;
+		if (|(int & ie))
 			irq <= 1'b1;
 		if (csr_we) begin
 			case (csr_a)

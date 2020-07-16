@@ -15,18 +15,30 @@ module i2c_slave #(
 );
 
 /* synchronize inputs & edge detect*/
-reg scl_r;
-reg [1:0] scl_in;
-reg sda_r;
-reg [1:0] sda_in;
-always @(posedge clk) begin
-	{scl_in, scl_r} <= {scl_in[0], scl_r, scl};
-	{sda_in, sda_r} <= {sda_in[0], sda_r, sda};
-end
-wire start   = ~sda_in[0] & sda_in[1] & scl_in[1];
-wire stop    = sda_in[0] & ~sda_in[1] & scl_in[1];
-wire capture = scl_in[0] & ~scl_in[1];
-wire update  = ~scl_in[0] & scl_in[1];
+wire sda_in, sda_posedge, sda_negedge;
+sync_edge sync_edge_sda (
+	.clk(clk),
+
+	.in(sda),
+	.out(sda_in),
+	.out_posedge(sda_posedge),
+	.out_negedge(sda_negedge)
+);
+
+wire scl_in, scl_posedge, scl_negedge;
+sync_edge sync_edge_scl (
+	.clk(clk),
+
+	.in(scl),
+	.out(scl_in),
+	.out_posedge(scl_posedge),
+	.out_negedge(scl_negedge)
+);
+
+wire start   = sda_negedge & scl_in;
+wire stop    = sda_posedge & scl_in;
+wire capture = scl_posedge;
+wire update  = scl_negedge;
 
 reg [3:0] bit_counter;
 always @(posedge clk) begin
@@ -45,13 +57,13 @@ always @(posedge clk) begin
 	if (rst)
 		input_shift <= 8'h0;
 	else if (capture)
-		input_shift <= {input_shift[6:0], sda_in[1]};
+		input_shift <= {input_shift[6:0], sda_in};
 end
 
 /* decode data */
 wire address_match = input_shift[7:1] == i2c_address;
 wire read_write = input_shift[0];
-wire master_ack = ~sda_in[1];
+wire master_ack = ~sda_in;
 
 /* I2C state machine */
 localparam [2:0] IDLE     = 3'd0,

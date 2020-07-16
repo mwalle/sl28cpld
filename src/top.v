@@ -12,9 +12,9 @@ module sl28_top #(
 
 	/* board control & interrupt */
 	output PWR_FORCE_DISABLE_n,
-	output reg SER2_TX_CFG_RCW_SRC0,
-	output reg SER1_TX_CFG_RCW_SRC1,
-	output reg CPLD_INTERRUPT_CFG_RCW_SRC2,
+	output SER2_TX_CFG_RCW_SRC0,
+	output SER1_TX_CFG_RCW_SRC1,
+	output CPLD_INTERRUPT_CFG_RCW_SRC2,
 	output TA_PROG_SFP_n,
 	output SPI_FLASH_DISABLE_WP,
 	output CARRIER_STBY_n_3V3,
@@ -95,7 +95,7 @@ power_fsm #(
 
 	.start(start_strobe),
 	.initial_pwr_off(1'b0),
-	.pwr_btn(!POWER_BTN_n),
+	.pwr_btn(power_btn),
 	.pwr_enable(pwr_enable)
 );
 assign PWR_FORCE_DISABLE_n = pwr_enable ? 1'bz : 1'b0;
@@ -110,28 +110,28 @@ clockgen clockgen (
 	.ce_1hz(ce_1hz)
 );
 
-wire force_recovery = ~FORCE_RECOV_n;
-reg rst0, rst;
-always @(posedge clk)
-	{rst0, rst} <= {rst, ~PORESET_n};
-wire drive_rcw_src = !force_recovery & (rst0 | rst);
-wire rst_negedge = rst0 & !rst;
+wire rst0, rst, rst_posedge;
+sync_edge sync_edge_poreset (
+	.clk(clk),
 
-wire irq_out;
-always @(*) begin
-	SER2_TX_CFG_RCW_SRC0 = 1'bz;
-	SER1_TX_CFG_RCW_SRC1 = 1'bz;
-	CPLD_INTERRUPT_CFG_RCW_SRC2 = 1'bz;
+	.in(~PORESET_n),
+	.out(rst),
+	.out0(rst0),
+	.out_posedge(rst_posedge)
+);
 
-	if (!force_recovery) begin
-		if (drive_rcw_src) begin
-			SER2_TX_CFG_RCW_SRC0 = 1'b0;
-			SER1_TX_CFG_RCW_SRC1 = 1'b1;
-			CPLD_INTERRUPT_CFG_RCW_SRC2 = 1'b0;
-		end
-		CPLD_INTERRUPT_CFG_RCW_SRC2 = irq_out;
-	end
+reg force_recovery;
+initial force_recovery = 1'b0;
+always @(posedge clk) begin
+	if (rst_posedge)
+		force_recovery <= force_recov;
 end
+wire drive_rcw_src = rst | rst0;
+
+wire [2:0] rcw_src = 3'b010;
+assign SER2_TX_CFG_RCW_SRC0 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[0] : 1'bz;
+assign SER1_TX_CFG_RCW_SRC1 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[1] : 1'bz;
+assign CPLD_INTERRUPT_CFG_RCW_SRC2 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[2] : irq_out;
 
 wire i2c_bus_reset_sda_out;
 wire i2c_bus_reset_scl_out;
@@ -424,6 +424,82 @@ gpo #(
 	})
 );
 
+wire sleep;
+wire sleep_negedge;
+sync_edge sync_edge_sleep (
+	.clk(clk),
+
+	.in(SLEEP_n),
+	.out(sleep),
+	.out_negedge(sleep_negedge)
+);
+
+wire power_btn;
+wire power_btn_edge;
+sync_edge sync_edge_power_btn (
+	.clk(clk),
+
+	.in(~POWER_BTN_n),
+	.out(power_btn),
+	.out_edge(power_btn_edge)
+);
+
+wire rtc_int_negedge;
+sync_edge sync_edge_rtc_int (
+	.clk(clk),
+
+	.in(RTC_INT_n),
+	.out_negedge(rtc_int_negedge)
+);
+
+wire smb_alert_negedge;
+sync_edge sync_edge_smb_alert (
+	.clk(clk),
+
+	.in(SMB_ALERT_1V8_n),
+	.out_negedge(smb_alert_negedge)
+);
+
+wire charger_prsnt;
+sync_edge sync_edge_charger_prsnt (
+	.clk(clk),
+
+	.in(~CHARGER_PRSNT_n),
+	.out(charger_prsnt)
+);
+
+wire charging;
+sync_edge sync_edge_charging (
+	.clk(clk),
+
+	.in(~CHARGING_n),
+	.out(charging)
+);
+
+wire lid;
+sync_edge sync_edge_lid (
+	.clk(clk),
+
+	.in(~LID_n),
+	.out(lid)
+);
+
+wire batlow;
+sync_edge sync_edge_batlow (
+	.clk(clk),
+
+	.in(~BATLOW_n),
+	.out(batlow)
+);
+
+wire force_recov;
+sync_edge sync_edge_force_recov (
+	.clk(clk),
+
+	.in(~FORCE_RECOV_n),
+	.out(force_recov)
+);
+
 gpi #(
 	.BASE_ADDR(5'h1b),
 	.NUM_GPIOS(7)
@@ -437,13 +513,13 @@ gpi #(
 	.csr_do(csr_do_gpi),
 
 	.in({
-		CHARGER_PRSNT_n,
-		CHARGING_n,
-		LID_n,
-		BATLOW_n,
-		SLEEP_n,
-		FORCE_RECOV_n,
-		POWER_BTN_n
+		charger_prsnt,
+		charging,
+		lid,
+		batlow,
+		sleep,
+		force_recov,
+		power_btn
 	})
 );
 
@@ -462,12 +538,12 @@ intc #(
 
 	.int({
 		wdt_irq,
-		SLEEP_n,
-		POWER_BTN_n,
+		sleep_negedge,
+		power_btn_edge,
 		1'b0, /* ESPI_ALERT1_n not supported */
 		1'b0, /* ESPI_ALERT0_n not supported */
-		SMB_ALERT_1V8_n,
-		RTC_INT_n
+		smb_alert_negedge,
+		rtc_int_negedge
 	})
 );
 

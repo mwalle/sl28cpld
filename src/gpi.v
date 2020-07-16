@@ -13,19 +13,10 @@ module gpi #(
 	input [NUM_GPIOS-1:0] in
 );
 
-/* synchonize */
-reg [NUM_GPIOS-1:0] in0;
-always @(posedge clk) begin
-	if (rst)
-		in0 <= {NUM_GPIOS {1'b0}};
-	else
-		in0 <= in;
-end
-
 always @(*) begin
 	csr_do = {NUM_GPIOS {1'b0}};
 	if (csr_a == BASE_ADDR)
-		csr_do = {{8-NUM_GPIOS {1'b0}}, in0};
+		csr_do = {{8-NUM_GPIOS {1'b0}}, in};
 end
 
 endmodule

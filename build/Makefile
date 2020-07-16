@@ -9,7 +9,7 @@ SRCS  = ../src/top.v ../src/i2c_slave.v ../src/pwm.v ../src/gpio.v
 SRCS += ../src/gpi.v ../src/gpo.v ../src/tacho.v ../src/usbfixer.v
 SRCS += ../src/clockgen.v ../src/watchdog.v ../src/cfg_ctrl_altera_ufm.v
 SRCS += ../src/ro_reg.v ../src/i2c_bus_reset.v ../src/power_fsm.v
-SRCS += ../src/intc.v
+SRCS += ../src/intc.v ../src/sync_edge.v
 
 all: $(PROJECT).jbc summary
 

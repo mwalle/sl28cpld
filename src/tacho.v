@@ -13,15 +13,13 @@ module tacho #(
 	input tacho_in
 );
 
-/* synchonize & edge detect */
-reg in2, in1, in0;
-always @(posedge clk) begin
-	if (rst)
-		{in2, in1, in0} <= 3'b0;
-	else
-		{in2, in1, in0} <= {in1, in0, tacho_in};
-end
-wire rising_edge = in2 & ~in1;
+wire tacho_negedge;
+sync_edge sync_edge_tacho_sleep (
+	.clk(clk),
+
+	.in(tacho_in),
+	.out_negedge(tacho_negedge)
+);
 
 reg [9:0] counter;
 reg [9:0] counter0;
@@ -30,7 +28,7 @@ always @(posedge clk) begin
 		counter <= 10'd0;
 		counter0 <= 10'd0;
 	end else begin
-		if (rising_edge)
+		if (tacho_negedge)
 			counter <= counter + 10'd1;
 
 		if (ce_1hz) begin

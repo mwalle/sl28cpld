@@ -19,14 +19,17 @@ module gpio #(
 );
 
 /* synchonize & edge detect */
-reg [NUM_GPIOS-1:0] in0, in1, in2;
-always @(posedge clk) begin
-	if (rst)
-		{in2, in1, in0} <= {NUM_GPIOS {3'b0}};
-	else
-		{in2, in1, in0} <= {in1, in0, in};
-end
-wire [NUM_GPIOS-1:0] in_edge = in2 ^ in1;
+wire [NUM_GPIOS-1:0] in_edge;
+wire [NUM_GPIOS-1:0] in_sync;
+sync_edge #(
+	.WIDTH(NUM_GPIOS)
+) sync_edge_gpio (
+	.clk(clk),
+
+	.in(in),
+	.out(in_sync),
+	.out_edge(in_edge)
+);
 
 reg [NUM_GPIOS-1:0] ie;
 reg [NUM_GPIOS-1:0] ip;
@@ -35,7 +38,7 @@ always @(*) begin
 	case (csr_a)
 		BASE_ADDR + 5'h0: csr_do = {{8-NUM_GPIOS {1'b0}}, oe};
 		BASE_ADDR + 5'h1: csr_do = {{8-NUM_GPIOS {1'b0}}, out};
-		BASE_ADDR + 5'h2: csr_do = {{8-NUM_GPIOS {1'b0}}, in1};
+		BASE_ADDR + 5'h2: csr_do = {{8-NUM_GPIOS {1'b0}}, in_sync};
 		BASE_ADDR + 5'h3: csr_do = {{8-NUM_GPIOS {1'b0}}, ie};
 		BASE_ADDR + 5'h4: csr_do = {{8-NUM_GPIOS {1'b0}}, ip};
 	endcase
