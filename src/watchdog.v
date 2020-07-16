@@ -42,6 +42,11 @@ wire wdt_bite = wdt_cnt == 8'd0;
 assign force_recovery_mode = wdt_en[1];
 assign wdt_out = wdt_oe & {wdt_bite, wdt_bite};
 
+reg wdt_bite0;
+always @(posedge clk)
+	wdt_bite0 <= wdt_bite;
+assign irq = !wdt_bite0 & wdt_bite;
+
 always @(posedge clk) begin
 	if (rst) begin
 		wdt_en <= 2'b00;
