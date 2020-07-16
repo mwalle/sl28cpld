@@ -96,8 +96,10 @@ always @(*) begin
 				next_state = READ;
 			else
 				next_state = IDX_PTR;
+
 		IDX_PTR:
 			next_state = WRITE;
+
 		READ:
 			if (!master_ack)
 				next_state = IDLE;
@@ -113,6 +115,7 @@ always @(posedge clk) begin
 		case (state)
 		IDX_PTR:
 			idx_ptr <= input_shift[4:0];
+
 		READ,
 		WRITE:
 			idx_ptr <= idx_ptr + 5'b1;
