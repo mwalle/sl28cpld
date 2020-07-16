@@ -1,7 +1,7 @@
 module sl28_top #(
 	CPLD_VERSION = 8'h20
 ) (
-	output HEALTHY_LED,
+	output HEALTHY_LED_n,
 
 	/* I2C bus */
 	inout I2C_LOCAL_SDA_3V3,
@@ -151,7 +151,7 @@ always @(posedge clk) begin
 	if (ce_1hz)
 		healthy_led <= ~healthy_led;
 end
-assign HEALTHY_LED = healthy_led;
+assign HEALTHY_LED_n = healthy_led | ~pwr_enable;
 
 wire [4:0] csr_a;
 wire [7:0] csr_di;
