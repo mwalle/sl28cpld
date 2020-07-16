@@ -56,6 +56,10 @@ module sl28_top #(
 	input CHARGING_n,
 	input CHARGER_PRSNT_n,
 
+	/* interrupts inputs */
+	input SMB_ALERT_1V8_n,
+	input RTC_INT_n,
+
 	/* USB control */
 	inout USB3_EN_OC_n,
 	input USB3_DRVVBUS,
@@ -158,25 +162,27 @@ wire [7:0] csr_do_cpld_version;
 wire [7:0] csr_do_wdt;
 wire [7:0] csr_do_brd_variant;
 wire [7:0] csr_do_misc_ctrl;
+wire [7:0] csr_do_tacho;
 wire [7:0] csr_do_pwm0;
 wire [7:0] csr_do_pwm1;
 wire [7:0] csr_do_gpio0;
 wire [7:0] csr_do_gpio1;
 wire [7:0] csr_do_gpo;
 wire [7:0] csr_do_gpi;
-wire [7:0] csr_do_tacho;
+wire [7:0] csr_do_intc;
 assign csr_do = csr_do_cfg_ctrl |
 		csr_do_cpld_version |
 		csr_do_wdt |
 		csr_do_brd_variant |
 		csr_do_misc_ctrl |
+		csr_do_tacho |
 		csr_do_pwm0 |
 		csr_do_pwm1 |
 		csr_do_gpio0 |
 		csr_do_gpio1 |
 		csr_do_gpo |
-		csr_do_tacho |
-		csr_do_gpi;
+		csr_do_gpi |
+		csr_do_intc;
 
 wire i2c_slave_sda_out;
 i2c_slave i2c_slave(
@@ -221,6 +227,7 @@ ro_reg #(
 );
 
 wire [1:0] wdt_out;
+wire wdt_irq_out;
 watchdog #(
 	.BASE_ADDR(5'h4),
 	.DFL_TIMEOUT(8'h06),
@@ -237,7 +244,7 @@ watchdog #(
 	.wdt_ce(ce_1hz),
 	.wdt_out(wdt_out),
 	.force_recovery_mode(),
-	.irq_out()
+	.irq_out(wdt_irq_out)
 );
 assign WDT_TIME_OUT_n = ~wdt_out[1];
 
@@ -437,6 +444,30 @@ gpi #(
 		SLEEP_n,
 		FORCE_RECOV_n,
 		POWER_BTN_n
+	})
+);
+
+
+intc #(
+	.BASE_ADDR(5'h1c),
+	.NUM_INTS(7)
+) intc (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_intc),
+
+	.int({
+		wdt_irq_out,
+		SLEEP_n,
+		POWER_BTN_n,
+		1'b0, /* ESPI_ALERT1_n not supported */
+		1'b0, /* ESPI_ALERT0_n not supported */
+		SMB_ALERT_1V8_n,
+		RTC_INT_n
 	})
 );
 
