@@ -1,8 +1,8 @@
 module watchdog #(
 	parameter BASE_ADDR = 5'h0,
-	parameter DFL_EN = 2'b00,
-	parameter DFL_OE = 2'b00,
-	parameter DFL_TIMEOUT = 8'hff,
+	parameter DEFAULT_EN = 2'b00,
+	parameter DEFAULT_OE = 2'b00,
+	parameter DEFAULT_TIMEOUT = 8'hff,
 	parameter KICK_VALUE = 8'h6b
 ) (
 	input rst,
@@ -32,8 +32,8 @@ reg [7:0] wdt_tout;
 reg [7:0] wdt_cnt;
 always @(posedge clk) begin
 	/* counter reset is gated and only allowed in non-failsafe mode */
-	if (rst & !wdt_en[1])
-		wdt_cnt <= DFL_TIMEOUT;
+	if (rst & ~wdt_en[1])
+		wdt_cnt <= DEFAULT_TIMEOUT;
 	else if (wdt_kick)
 		wdt_cnt <= wdt_tout;
 	else if (ce & !wdt_bite & |wdt_en)
@@ -50,9 +50,9 @@ assign irq = !wdt_bite0 & wdt_bite;
 
 always @(posedge clk) begin
 	if (rst) begin
-		wdt_en <= DFL_EN;
-		wdt_oe <= DFL_OE;
-		wdt_tout <= DFL_TIMEOUT;
+		wdt_en <= DEFAULT_EN;
+		wdt_oe <= DEFAULT_OE;
+		wdt_tout <= DEFAULT_TIMEOUT;
 		wdt_locked <= 1'b0;
 	end else begin
 		if (csr_we & !wdt_locked) begin

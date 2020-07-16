@@ -6,7 +6,7 @@ module tb_watchdog();
 `include "slowclock.v"
 
 watchdog #(
-	.DFL_TIMEOUT(8'h3)
+	.DEFAULT_TIMEOUT(8'h3)
 ) dut(
 	.rst(rst),
 	.clk(clk),

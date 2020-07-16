@@ -234,8 +234,8 @@ wire [1:0] wdt_out;
 wire wdt_irq;
 watchdog #(
 	.BASE_ADDR(5'h4),
-	.DFL_TIMEOUT(8'h06),
-	.DFL_OE(2'b01)
+	.DEFAULT_TIMEOUT(8'h06),
+	.DEFAULT_OE(2'b01)
 ) watchdog (
 	.rst(rst),
 	.clk(clk),
