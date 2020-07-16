@@ -219,6 +219,9 @@ cfg_ctrl_altera_ufm #(
 ro_reg #(
 	.BASE_ADDR(5'h3)
 ) cpld_version (
+	.rst(rst),
+	.clk(clk),
+
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
@@ -252,6 +255,9 @@ assign WDT_TIME_OUT_n = ~wdt_out[1];
 ro_reg #(
 	.BASE_ADDR(5'h9)
 ) brd_variant (
+	.rst(rst),
+	.clk(clk),
+
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
@@ -315,6 +321,8 @@ pwm #(
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do_pwm0),
+
+	.pwm_en(),
 	.pwm_out(LCD0_BKLT_PWM_3V3)
 );
 
@@ -331,6 +339,7 @@ pwm #(
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do_pwm1),
+
 	.pwm_en(pwm1_en),
 	.pwm_out(pwm1_out)
 );
@@ -372,9 +381,9 @@ assign gpio0_in[5] = GPIO5_PWM_OUT;
 assign gpio0_in[6] = GPIO6_TACHIN;
 assign gpio0_in[7] = GPIO7;
 
-wire [7:0] gpio1_out;
-wire [7:0] gpio1_in;
-wire [7:0] gpio1_oe;
+wire [3:0] gpio1_out;
+wire [3:0] gpio1_in;
+wire [3:0] gpio1_oe;
 wire gpio1_irq;
 gpio #(
 	.BASE_ADDR(5'h15),
