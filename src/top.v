@@ -164,8 +164,9 @@ i2c_bus_reset i2c_bus_reset (
 );
 
 reg healthy_led;
+wire healthy_led_ce = force_recovery ? ce_8hz : ce_1hz;
 always @(posedge clk) begin
-	if (ce_1hz)
+	if (healthy_led_ce)
 		healthy_led <= ~healthy_led;
 end
 assign HEALTHY_LED_n = healthy_led | ~pwr_enable;
