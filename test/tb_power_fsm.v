@@ -21,9 +21,6 @@ power_fsm #(
 	.pwr_enable()
 );
 
-initial $dumpfile("power_fsm.lx2");
-initial $dumpvars(0, dut);
-
 initial begin
 	start = 1'b0;
 	pwr_btn = 1'b0;
@@ -55,5 +52,8 @@ initial begin
 
 	$finish;
 end
+
+initial $dumpfile("power_fsm.lx2");
+initial $dumpvars(0, dut);
 
 endmodule
