@@ -9,6 +9,8 @@ module sl28_top #(
 
 	/* reset */
 	input PORESET_n,
+	inout RESET_REQ_n,
+	output HRESET_n,
 
 	/* board control & interrupt */
 	output PWR_FORCE_DISABLE_n,
@@ -99,6 +101,20 @@ power_fsm #(
 	.pwr_enable(pwr_enable)
 );
 assign PWR_FORCE_DISABLE_n = pwr_enable ? 1'bz : 1'b0;
+
+wire reset_req_out;
+reset_req #(
+	.EXTEND_COUNT(3'd5)
+) reset_req (
+	.clk(clk),
+	.ce(ce_8hz),
+
+	.reset_req_n(RESET_REQ_n),
+	.reset_req_out(reset_req_out)
+);
+
+assign RESET_REQ_n = reset_req_out ? 1'b0 : 1'bz;
+assign HRESET_n = reset_req_out ? 1'b0 : 1'bz;
 
 wire ce_32khz;
 wire ce_8hz;

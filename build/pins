@@ -125,3 +125,8 @@ set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to RTC_I
 
 set_location_assignment PIN_A6 -to SMB_ALERT_1V8_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to SMB_ALERT_1V8_n
+
+set_location_assignment PIN_B4 -to RESET_REQ_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to RESET_REQ_n
+set_location_assignment PIN_A1 -to HRESET_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to HRESET_n
