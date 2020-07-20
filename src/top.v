@@ -71,7 +71,7 @@ module sl28_top #(
 	output LCD0_BKLT_PWM_3V3,
 
 	/* board config */
-	input [5:0] BOARD_CONFIG
+	inout [3:0] BOARD_CONFIG
 );
 
 usbfixer usbfixer (
@@ -269,18 +269,19 @@ watchdog #(
 );
 assign WDT_TIME_OUT_n = ~wdt_out[1];
 
-ro_reg #(
+config_trits #(
 	.BASE_ADDR(5'h9)
-) brd_variant (
+) config_trits (
 	.rst(rst),
 	.clk(clk),
+	.ce(ce_32khz),
 
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do_brd_variant),
 
-	.in({2'b0, BOARD_CONFIG})
+	.trits(BOARD_CONFIG)
 );
 
 wire [5:0] misc_out;
