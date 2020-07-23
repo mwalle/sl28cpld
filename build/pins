@@ -1,5 +1,6 @@
 set_global_assignment -name ENABLE_DEVICE_WIDE_OE ON
 set_global_assignment -name RESERVE_ALL_UNUSED_PINS "AS INPUT TRI-STATED"
+set_global_assignment -name AUTO_PACKED_REGISTERS_MAX "MINIMIZE AREA"
 
 set_location_assignment PIN_A3 -to PORESET_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to PORESET_n
