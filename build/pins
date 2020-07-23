@@ -98,10 +98,6 @@ set_location_assignment PIN_D1 -to BOARD_CONFIG[2]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[2]
 set_location_assignment PIN_F3 -to BOARD_CONFIG[3]
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[3]
-set_location_assignment PIN_C2 -to BOARD_CONFIG[4]
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[4]
-set_location_assignment PIN_K3 -to BOARD_CONFIG[5]
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOARD_CONFIG[5]
 
 set_location_assignment PIN_A7 -to TA_PROG_SFP_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to TA_PROG_SFP_n
@@ -130,3 +126,10 @@ set_location_assignment PIN_B4 -to RESET_REQ_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to RESET_REQ_n
 set_location_assignment PIN_A1 -to HRESET_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to HRESET_n
+
+set_location_assignment PIN_C2 -to I2C_GP_SCL
+set_location_assignment PIN_E10 -to I2C_GP_SDA
+set_instance_assignment -name IO_STANDARD "1.8 V" -to I2C_GP_SDA
+set_location_assignment PIN_K3 -to I2C_PM_SCL
+set_location_assignment PIN_B5 -to I2C_PM_SDA
+set_instance_assignment -name IO_STANDARD "1.8 V" -to I2C_PM_SDA

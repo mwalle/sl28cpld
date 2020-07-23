@@ -70,6 +70,12 @@ module sl28_top #(
 	/* PWM */
 	output LCD0_BKLT_PWM_3V3,
 
+	/* I2C fixer */
+	inout I2C_GP_SCL,
+	output I2C_GP_SDA,
+	inout I2C_PM_SCL,
+	output I2C_PM_SDA,
+
 	/* board config */
 	inout [3:0] BOARD_CONFIG
 );
@@ -152,7 +158,7 @@ assign CPLD_INTERRUPT_CFG_RCW_SRC2 = force_recovery ? 1'bz : drive_rcw_src ? rcw
 
 wire i2c_bus_reset_sda_out;
 wire i2c_bus_reset_scl_out;
-i2c_bus_reset i2c_bus_reset (
+i2c_bus_reset i2c_local_bus_reset (
 	.clk(clk),
 	.ce(ce_32khz),
 
@@ -162,6 +168,36 @@ i2c_bus_reset i2c_bus_reset (
 
 	.start(rst_posedge)
 );
+
+wire i2c_gp_sda_out;
+wire i2c_gp_scl_out;
+i2c_bus_reset i2c_bus_gp_reset (
+	.clk(clk),
+	.ce(ce_32khz),
+
+	.sda(I2C_GP_SDA),
+	.sda_out(i2c_gp_sda_out),
+	.scl_out(i2c_gp_scl_out),
+
+	.start(rst_posedge)
+);
+assign I2C_GP_SDA = (!i2c_gp_sda_out) ? 1'b0 : 1'bz;
+assign I2C_GP_SCL = (!i2c_gp_scl_out) ? 1'b0 : 1'bz;
+
+wire i2c_pm_sda_out;
+wire i2c_pm_scl_out;
+i2c_bus_reset i2c_bus_pm_reset (
+	.clk(clk),
+	.ce(ce_32khz),
+
+	.sda(I2C_PM_SDA),
+	.sda_out(i2c_pm_sda_out),
+	.scl_out(i2c_pm_scl_out),
+
+	.start(rst_posedge)
+);
+assign I2C_PM_SDA = (!i2c_pm_sda_out) ? 1'b0 : 1'bz;
+assign I2C_PM_SCL = (!i2c_pm_scl_out) ? 1'b0 : 1'bz;
 
 reg healthy_led;
 wire healthy_led_ce = force_recovery ? ce_8hz : ce_1hz;
