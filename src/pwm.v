@@ -14,7 +14,6 @@ module pwm #(
 	output pwm_out
 );
 
-
 always @(*) begin
 	csr_do = 8'b0;
 	case (csr_a)
@@ -51,14 +50,17 @@ always @(*) begin
 end
 
 reg [7:0] pwm_counter;
-reg [6:0] active_duty_cycle;
 always @(posedge clk) begin
-	if (rst || pwm_reset) begin
+	if (rst || pwm_reset)
 		pwm_counter <= 8'd1;
-		active_duty_cycle <= duty_cycle;
-	end else if (pwm_ce)
+	else if (pwm_ce)
 		pwm_counter <= pwm_counter + 8'b1;
 end
+
+reg [6:0] active_duty_cycle;
+always @(posedge clk)
+	if (rst || pwm_reset)
+		active_duty_cycle <= duty_cycle;
 
 wire pwm_match = pwm_counter == active_duty_cycle;
 reg pwm_out_int;
