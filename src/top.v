@@ -24,6 +24,11 @@ module sl28_top #(
 	output PCIE_B_RST_n,
 	output PCIE_C_RST_n,
 
+	/* SMARC boot selection */
+	input BOOT_SEL0_n,
+	input BOOT_SEL1_n,
+	input BOOT_SEL2_n,
+
 	/* watchdog */
 	output WDT_TIME_OUT_n,
 
@@ -214,6 +219,7 @@ wire [7:0] csr_do;
 wire [7:0] csr_do_cfg_ctrl;
 wire [7:0] csr_do_cpld_version;
 wire [7:0] csr_do_wdt;
+wire [7:0] csr_do_brd_control;
 wire [7:0] csr_do_brd_variant;
 wire [7:0] csr_do_misc_ctrl;
 wire [7:0] csr_do_tacho;
@@ -227,6 +233,7 @@ wire [7:0] csr_do_intc;
 assign csr_do = csr_do_cfg_ctrl |
 		csr_do_cpld_version |
 		csr_do_wdt |
+		csr_do_brd_control |
 		csr_do_brd_variant |
 		csr_do_misc_ctrl |
 		csr_do_tacho |
@@ -304,6 +311,21 @@ watchdog #(
 	.irq(wdt_irq)
 );
 assign WDT_TIME_OUT_n = ~wdt_out[1];
+
+ro_reg #(
+	.BASE_ADDR(5'h8)
+) board_control (
+	.rst(rst),
+	.clk(clk),
+
+	.csr_a(csr_a),
+	.csr_di(csr_di),
+	.csr_we(csr_we),
+	.csr_do(csr_do_brd_control),
+
+	.in({1'b0, BOOT_SEL2_n, BOOT_SEL1_n, BOOT_SEL0_n, 4'b0000})
+);
+wire power_off_by_reg = (csr_we && csr_a == 5'h8 && csr_di[0]);
 
 config_trits #(
 	.BASE_ADDR(5'h9)
