@@ -7,6 +7,8 @@ module power_fsm #(
 
 	input start,
 	input initial_pwr_off,
+	input pwr_off,
+	input pwr_on,
 	input pwr_btn,
 	output pwr_enable
 );
@@ -33,13 +35,17 @@ always @(posedge clk) begin
 				state <= POWER_ON;
 
 	POWER_ON:
-		if (pwr_btn) begin
+		if (pwr_off)
+			state <= POWER_OFF;
+		else if (pwr_btn) begin
 			pwr_btn_cnt <= 3'd0;
 			state <= POWER_OFF_PENDING;
 		end
 
 	POWER_OFF_PENDING:
-		if (!pwr_btn)
+		if (pwr_off)
+			state <= POWER_OFF;
+		else if (!pwr_btn)
 			state <= POWER_ON;
 		else if (pwr_btn_cnt == LONG_PRESS_DELAY)
 			state <= POWER_OFF_WAIT1;
@@ -59,7 +65,7 @@ always @(posedge clk) begin
 			state <= POWER_OFF;
 
 	POWER_OFF:
-		if (pwr_btn)
+		if (pwr_on || pwr_btn)
 			state <= POWER_ON;
 	endcase
 end

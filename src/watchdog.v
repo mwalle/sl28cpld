@@ -1,6 +1,5 @@
 module watchdog #(
 	parameter BASE_ADDR = 5'h0,
-	parameter DEFAULT_EN = 2'b00,
 	parameter DEFAULT_OE = 2'b00,
 	parameter DEFAULT_TIMEOUT = 8'hff,
 	parameter KICK_VALUE = 8'h6b
@@ -14,7 +13,9 @@ module watchdog #(
 	input csr_we,
 	output reg [7:0] csr_do,
 
+	input [1:0] wdt_en_default,
 	output [1:0] wdt_out,
+	output [1:0] wdt_out_strobe,
 	output force_recovery_mode,
 	output irq
 );
@@ -39,18 +40,21 @@ always @(posedge clk) begin
 	else if (ce & !wdt_bite & |wdt_en)
 		wdt_cnt <= wdt_cnt - 8'd1;
 end
-wire wdt_bite = wdt_cnt == 8'd0;
-assign force_recovery_mode = wdt_en[1];
+wire wdt_bite = |wdt_en & (wdt_cnt == 8'd0);
+assign force_recovery_mode = wdt_bite & wdt_en[1];
 assign wdt_out = wdt_oe & {wdt_bite, wdt_bite};
 
 reg wdt_bite0;
 always @(posedge clk)
 	wdt_bite0 <= wdt_bite;
-assign irq = !wdt_bite0 & wdt_bite;
+wire wdt_bite_pulse = !wdt_bite0 & wdt_bite;
+
+assign irq = wdt_bite_pulse;
+assign wdt_out_strobe = wdt_oe & {wdt_bite_pulse, wdt_bite_pulse};
 
 always @(posedge clk) begin
 	if (rst) begin
-		wdt_en <= DEFAULT_EN;
+		wdt_en <= wdt_en_default;
 		wdt_oe <= DEFAULT_OE;
 		wdt_tout <= DEFAULT_TIMEOUT;
 		wdt_locked <= 1'b0;

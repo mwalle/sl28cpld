@@ -5,6 +5,13 @@ set_global_assignment -name AUTO_PACKED_REGISTERS_MAX "MINIMIZE AREA"
 set_location_assignment PIN_A3 -to PORESET_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to PORESET_n
 
+set_location_assignment PIN_L3 -to USB2517_RST_n
+set_location_assignment PIN_D3 -to PTN3460_PD_n
+set_location_assignment PIN_L7 -to PTN3460_RST_n
+set_location_assignment PIN_K7 -to SDIO_PWR_EN
+set_location_assignment PIN_J6 -to EMMC_RST_n
+set_location_assignment PIN_K6 -to GBE_FORCE_RST_n
+
 set_location_assignment PIN_L1 -to HEALTHY_LED_n
 set_location_assignment PIN_H2 -to I2C_LOCAL_SDA_3V3
 set_instance_assignment -name IO_STANDARD "3.3V SCHMITT TRIGGER INPUT" -to I2C_LOCAL_SDA_3V3
@@ -57,7 +64,6 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to POWER_BTN_n
 set_location_assignment PIN_B2 -to FORCE_RECOV_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to FORCE_RECOV_n
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to FORCE_RECOV_n
-
 
 set_location_assignment PIN_B10 -to SLEEP_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to SLEEP_n
@@ -135,6 +141,13 @@ set_location_assignment PIN_K3 -to I2C_PM_SCL
 set_location_assignment PIN_B5 -to I2C_PM_SDA
 set_instance_assignment -name IO_STANDARD "1.8 V" -to I2C_PM_SDA
 
+set_location_assignment PIN_L10 -to I2C_SDA_5P49V6967_SEL0
+set_location_assignment PIN_K10 -to I2C_SDA_5P49V6967_SEL1
+set_location_assignment PIN_B8 -to CLKGEN_5P49V6967_OEA_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CLKGEN_5P49V6967_OEA_n
+set_location_assignment PIN_B7 -to CLKGEN_5P49V6967_OEB_n
+set_instance_assignment -name IO_STANDARD "1.8 V" -to CLKGEN_5P49V6967_OEB_n
+
 set_location_assignment PIN_J10 -to BOOT_SEL0_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to BOOT_SEL0_n
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOOT_SEL0_n
@@ -144,3 +157,5 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOOT_SEL1_n
 set_location_assignment PIN_H9 -to BOOT_SEL2_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to BOOT_SEL2_n
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to BOOT_SEL2_n
+
+set_location_assignment PIN_K5 -to WOL_INT_GBE_n

@@ -12,17 +12,29 @@ module sl28_top #(
 	inout RESET_REQ_n,
 	output HRESET_n,
 
+	/* peripheral resets */
+	output PCIE_A_RST_n,
+	output PCIE_B_RST_n,
+	output PCIE_C_RST_n,
+	output USB2517_RST_n,
+	output PTN3460_PD_n,
+	output PTN3460_RST_n,
+	output SDIO_PWR_EN,
+	output EMMC_RST_n,
+	output GBE_FORCE_RST_n,
+
 	/* board control & interrupt */
 	output PWR_FORCE_DISABLE_n,
 	output SER2_TX_CFG_RCW_SRC0,
 	output SER1_TX_CFG_RCW_SRC1,
-	output CPLD_INTERRUPT_CFG_RCW_SRC2,
+	inout CPLD_INTERRUPT_CFG_RCW_SRC2,
 	output TA_PROG_SFP_n,
 	output SPI_FLASH_DISABLE_WP,
 	output CARRIER_STBY_n_3V3,
-	output PCIE_A_RST_n,
-	output PCIE_B_RST_n,
-	output PCIE_C_RST_n,
+	output I2C_SDA_5P49V6967_SEL0,
+	output I2C_SDA_5P49V6967_SEL1,
+	output CLKGEN_5P49V6967_OEA_n,
+	output CLKGEN_5P49V6967_OEB_n,
 
 	/* SMARC boot selection */
 	input BOOT_SEL0_n,
@@ -49,10 +61,6 @@ module sl28_top #(
 	/* GPO */
 	output LCD0_VDD_EN_3V3,
 	output LCD0_BKLT_EN_3V3,
-	output EMMC_RST_n,
-	output PTN3460_RST_n,
-	output PTN3460_PD_n,
-	output SDIO_PWR_EN,
 
 	/* GPI */
 	input POWER_BTN_n,
@@ -66,6 +74,7 @@ module sl28_top #(
 	/* interrupts inputs */
 	input SMB_ALERT_1V8_n,
 	input RTC_INT_n,
+	input WOL_INT_GBE_n,
 
 	/* USB control */
 	inout USB3_EN_OC_n,
@@ -76,10 +85,10 @@ module sl28_top #(
 	output LCD0_BKLT_PWM_3V3,
 
 	/* I2C fixer */
-	inout I2C_GP_SCL,
-	output I2C_GP_SDA,
-	inout I2C_PM_SCL,
-	output I2C_PM_SDA,
+	output I2C_GP_SCL,
+	inout I2C_GP_SDA,
+	output I2C_PM_SCL,
+	inout I2C_PM_SDA,
 
 	/* board config */
 	inout [3:0] BOARD_CONFIG
@@ -93,11 +102,25 @@ usbfixer usbfixer (
 
 wire clk;
 
-reg [1:0] start_cnt = 2'b0;
-always @(posedge clk)
-	start_cnt <= {start_cnt[0], 1'b1};
-wire start_strobe = start_cnt[0] ^ start_cnt[1];
+wire cfg_read_done, cfg_read_done_posedge;
+sync_edge sync_edge_cfg_read_done (
+	.clk(clk),
 
+	.in(cfg_read_done),
+	.out_posedge(cfg_read_done_posedge)
+);
+
+wire wol_int_negedge;
+sync_edge sync_edge_wol_int (
+	.clk(clk),
+
+	.in(WOL_INT_GBE_n),
+	.out_negedge(wol_int_negedge)
+);
+
+wire initial_pwr_off;
+wire power_on;
+wire power_off;
 wire pwr_enable;
 power_fsm #(
 	.LONG_PRESS_DELAY(3'd5)
@@ -106,12 +129,16 @@ power_fsm #(
 	.ce_1hz(ce_1hz),
 	.ce_8hz(ce_8hz),
 
-	.start(start_strobe),
-	.initial_pwr_off(1'b0),
+	.start(cfg_read_done_posedge),
+	.initial_pwr_off(initial_pwr_off),
+	.pwr_on(power_on),
+	.pwr_off(power_off),
 	.pwr_btn(power_btn),
 	.pwr_enable(pwr_enable)
 );
 assign PWR_FORCE_DISABLE_n = pwr_enable ? 1'bz : 1'b0;
+assign power_off = power_off_by_reg | power_off_by_reset;
+assign power_on = rtc_int_negedge | wol_int_negedge;
 
 wire reset_req_out;
 reset_req #(
@@ -124,8 +151,9 @@ reset_req #(
 	.reset_req_out(reset_req_out)
 );
 
-assign RESET_REQ_n = reset_req_out ? 1'b0 : 1'bz;
-assign HRESET_n = reset_req_out ? 1'b0 : 1'bz;
+wire cpu_reset;
+assign RESET_REQ_n = (reset_req_out | cpu_reset) ? 1'b0 : 1'bz;
+assign HRESET_n = (reset_req_out | cpu_reset) ? 1'b0 : 1'bz;
 
 wire ce_32khz;
 wire ce_8hz;
@@ -151,15 +179,25 @@ reg force_recovery;
 initial force_recovery = 1'b0;
 always @(posedge clk) begin
 	if (rst_posedge)
-		force_recovery <= force_recov;
+		force_recovery <= force_recov | wdt_force_recovery_mode;
 end
 wire drive_rcw_src = rst | rst0;
 
-wire [2:0] rcw_src = 3'b010;
 wire irq_out;
-assign SER2_TX_CFG_RCW_SRC0 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[0] : 1'bz;
-assign SER1_TX_CFG_RCW_SRC1 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[1] : 1'bz;
-assign CPLD_INTERRUPT_CFG_RCW_SRC2 = force_recovery ? 1'bz : drive_rcw_src ? rcw_src[2] : irq_out;
+wire emmc_boot;
+wire [2:0] rcw_src = emmc_boot ? 3'b001 : 3'b010;
+assign SER2_TX_CFG_RCW_SRC0 = (drive_rcw_src & ~force_recovery) ? rcw_src[0] : 1'bz;
+assign SER1_TX_CFG_RCW_SRC1 = (drive_rcw_src & ~force_recovery) ? rcw_src[1] : 1'bz;
+assign CPLD_INTERRUPT_CFG_RCW_SRC2 =
+	drive_rcw_src ? (force_recovery ? 1'bz : rcw_src[2]) :
+	FORCE_RECOV_n ? (irq_out ? 1'b0 : 1'bz) : ~irq_out;
+
+reg power_off_latch;
+always @(posedge clk) begin
+	if (!irq_out)
+		power_off_latch <= ~CPLD_INTERRUPT_CFG_RCW_SRC2;
+end
+wire power_off_by_reset = power_off_latch && rst_posedge;
 
 wire i2c_bus_reset_sda_out;
 wire i2c_bus_reset_scl_out;
@@ -260,6 +298,7 @@ i2c_slave i2c_slave(
 	.csr_do(csr_di)
 );
 
+wire [15:0] cfg;
 cfg_ctrl_altera_ufm #(
 	.BASE_ADDR(5'h0)
 ) cfg_ctrl (
@@ -271,10 +310,25 @@ cfg_ctrl_altera_ufm #(
 	.csr_we(csr_we),
 	.csr_do(csr_do_cfg_ctrl),
 
-	.start(1'b0),
-	.done(),
+	.start(rst_posedge),
+	.force_recovery(force_recovery),
+	.done(cfg_read_done),
+	.cfg(cfg),
 	.osc(clk)
 );
+
+assign initial_pwr_off = !cfg[0];
+assign emmc_boot = !cfg[1];
+wire watchdog_enabled = !cfg[2];
+wire failsafe_watchdog_disabled = !cfg[3];
+assign I2C_SDA_5P49V6967_SEL0 = cfg[4] ? 1'bz : 1'b1;
+assign I2C_SDA_5P49V6967_SEL1 = cfg[5] ? 1'bz : 1'b1;
+assign CLKGEN_5P49V6967_OEA_n = cfg[6] ? 1'bz : 1'b1;
+assign CLKGEN_5P49V6967_OEB_n = cfg[7] ? 1'bz : 1'b1;
+wire keep_gbe_phy_in_reset = !cfg[8];
+wire keep_usb2517_in_reset = !cfg[9];
+wire keep_ptn3460_in_reset = !cfg[10];
+wire gbe_phy_reset_enabled = !cfg[12];
 
 ro_reg #(
 	.BASE_ADDR(5'h3)
@@ -291,10 +345,12 @@ ro_reg #(
 );
 
 wire [1:0] wdt_out;
+wire [1:0] wdt_out_strobe;
 wire wdt_irq;
+wire wdt_force_recovery_mode;
 watchdog #(
 	.BASE_ADDR(5'h4),
-	.DEFAULT_TIMEOUT(8'h06),
+	.DEFAULT_TIMEOUT(8'h08),
 	.DEFAULT_OE(2'b01)
 ) watchdog (
 	.rst(rst),
@@ -306,10 +362,13 @@ watchdog #(
 	.csr_we(csr_we),
 	.csr_do(csr_do_wdt),
 
+	.wdt_en_default({!failsafe_watchdog_disabled, watchdog_enabled}),
 	.wdt_out(wdt_out),
-	.force_recovery_mode(),
+	.wdt_out_strobe(wdt_out_strobe),
+	.force_recovery_mode(wdt_force_recovery_mode),
 	.irq(wdt_irq)
 );
+assign cpu_reset = wdt_out_strobe[0];
 assign WDT_TIME_OUT_n = ~wdt_out[1];
 
 ro_reg #(
@@ -487,10 +546,14 @@ assign gpio1_in[1] = GPIO9;
 assign gpio1_in[2] = GPIO10;
 assign gpio1_in[3] = GPIO11;
 
+wire ptn3460_powerdown;
+wire ptn3460_reset;
+wire emmc_reset;
+wire sdio_pwr_enable;
 gpo #(
 	.BASE_ADDR(5'h1a),
 	.NUM_GPIOS(6),
-	.DFL_STATE(6'b110001)
+	.DFL_STATE(6'b100000)
 ) gpo (
 	.rst(rst),
 	.clk(clk),
@@ -501,14 +564,21 @@ gpo #(
 	.csr_do(csr_do_gpo),
 
 	.out({
-		SDIO_PWR_EN,
-		PTN3460_PD_n,
-		PTN3460_RST_n,
-		EMMC_RST_n,
+		sdio_pwr_enable,
+		ptn3460_powerdown,
+		ptn3460_reset,
+		emmc_reset,
 		LCD0_BKLT_EN_3V3,
 		LCD0_VDD_EN_3V3
 	})
 );
+
+assign PTN3460_RST_n = (rst | ptn3460_reset | keep_ptn3460_in_reset) ? 1'b0 : 1'bz;
+assign PTN3460_PD_n = (rst | ptn3460_powerdown | keep_ptn3460_in_reset) ? 1'b0 : 1'bz;
+assign EMMC_RST_n = (rst | emmc_reset) ? 1'b0 : 1'bz;
+assign SDIO_PWR_EN = sdio_pwr_enable & !rst;
+assign USB2517_RST_n = (rst | keep_usb2517_in_reset) ? 1'b0 : 1'bz;
+assign GBE_FORCE_RST_n = ((rst & gbe_phy_reset_enabled) | keep_gbe_phy_in_reset) ? 1'b0 : 1'bz;
 
 wire sleep;
 wire sleep_negedge;
