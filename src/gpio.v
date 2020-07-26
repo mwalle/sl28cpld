@@ -54,7 +54,7 @@ always @(posedge clk) begin
 	end else begin
 		irq <= 1'b0;
 		ip <= ip | in_edge;
-		if (|(in_edge & ie))
+		if (in_edge & ie)
 			irq <= 1'b1;
 		if (csr_we) begin
 			case (csr_a)
@@ -62,7 +62,7 @@ always @(posedge clk) begin
 				BASE_ADDR + 5'h1: out <= csr_di[NUM_GPIOS-1:0];
 				BASE_ADDR + 5'h3: begin
 					ie <= csr_di[NUM_GPIOS-1:0];
-					irq <= |(ie & ip);
+					irq <= |(ip & csr_di[NUM_GPIOS-1:0]);
 				end
 				BASE_ADDR + 5'h4: ip <= ip & ~csr_di[NUM_GPIOS-1:0];
 			endcase
