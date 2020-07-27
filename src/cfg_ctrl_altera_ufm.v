@@ -47,67 +47,52 @@ altufm_none ufm(
 	.osc(osc)
 );
 
-localparam [4:0] STARTING     = 5'b00000,
-		 SHIFT_ADDR0  = 5'b01110,
-		 SHIFT_ADDR1  = 5'b01111,
-		 LOAD_DATA0   = 5'b00001,
-		 LOAD_DATA1   = 5'b00011,
-		 SHIFT_DATA0  = 5'b00101,
-		 SHIFT_DATA1  = 5'b00111,
-		 DONE         = 5'b10111;
+localparam [3:0] STARTING     = 4'b0000,
+		 SHIFT_ADDR   = 4'b0001,
+		 LOAD_DATA    = 4'b0010,
+		 SHIFT_DATA   = 4'b0110,
+		 DONE         = 4'b1000;
 
-assign arclk = state[0];
-assign drclk = done ? drclk_r : state[1];
+assign arclk = clk & state[0];
+assign drclk = done ? drclk_r : (clk & state[1]);
 assign drshft = done ? drshft_r : state[2];
-assign done = state[4];
+assign done = state[3];
 assign cfg = (done & ~force_recovery) ? ufm_data : 16'hffff;
 
-reg [4:0] state;
+reg [3:0] state;
 reg [15:0] ufm_data;
 reg [3:0] counter;
 initial state = STARTING;
 always @(posedge clk) begin
 	case (state)
 	STARTING: begin
-		counter[3:0] <= 4'd0;
-		state <= SHIFT_ADDR1;
+		counter <= 4'd0;
+		state <= SHIFT_ADDR;
 	end
 
-	SHIFT_ADDR0: begin
-		counter[3:0] <= counter[3:0] + 4'd1;
-		state <= SHIFT_ADDR1;
-	end
-
-	SHIFT_ADDR1:
-		if (counter[3:0] == 4'd9)
-			state <= LOAD_DATA0;
+	SHIFT_ADDR: begin
+		if (counter == 4'd9)
+			state <= LOAD_DATA;
 		else
-			state <= SHIFT_ADDR0;
-
-	LOAD_DATA0:
-		state <= LOAD_DATA1;
-
-	LOAD_DATA1: begin
-		counter[3:0] <= 4'd0;
-		state <= SHIFT_DATA0;
+			counter <= counter + 4'd1;
 	end
 
-	SHIFT_DATA0: begin
+	LOAD_DATA: begin
+		counter <= 4'd0;
+		state <= SHIFT_DATA;
+	end
+
+	SHIFT_DATA: begin
 		ufm_data <= {ufm_data[14:0], drdout};
-		if (counter[3:0] == 4'd15)
+		if (counter == 4'd15)
 			state <= DONE;
 		else
-			state <= SHIFT_DATA1;
-	end
-
-	SHIFT_DATA1: begin
-		counter[3:0] <= counter[3:0] + 4'd1;
-		state <= SHIFT_DATA0;
+			counter <= counter + 4'd1;
 	end
 
 	DONE:
 		if (start)
-			state <= LOAD_DATA0;
+			state <= LOAD_DATA;
 	endcase
 end
 
