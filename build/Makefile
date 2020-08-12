@@ -1,5 +1,6 @@
 PROJECT = sl28cpld
 TOP_LEVEL_ENTITY = sl28_top
+SEED ?= 0
 
 FAMILY = MAX V
 PART = 5M570ZM100I5
@@ -38,7 +39,7 @@ $(PROJECT).map.rpt: $(PROJECT).qsf map.chg $(SOURCE_FILES)
 	@touch fit.chg
 
 $(PROJECT).fit.rpt: $(PROJECT).qsf fit.chg $(PROJECT).map.rpt
-	@quartus_fit --read_settings_files=on --part=$(PART) $(PROJECT)
+	@quartus_fit --read_settings_files=on --part=$(PART) --seed=$(SEED) $(PROJECT)
 	@touch asm.chg
 	@touch sta.chg
 
