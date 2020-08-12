@@ -37,7 +37,7 @@ always @(posedge clk) begin
 		wdt_cnt <= DEFAULT_TIMEOUT;
 	else if (wdt_kick)
 		wdt_cnt <= wdt_tout;
-	else if (ce & !wdt_bite & |wdt_en)
+	else if (ce && !wdt_bite)
 		wdt_cnt <= wdt_cnt - 8'd1;
 end
 wire wdt_bite = |wdt_en & (wdt_cnt == 8'd0);
