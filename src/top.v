@@ -140,6 +140,14 @@ assign PWR_FORCE_DISABLE_n = pwr_enable ? 1'bz : 1'b0;
 assign power_off = power_off_by_reg | power_off_by_reset;
 assign power_on = rtc_int_negedge | wol_int_negedge;
 
+reg is_power_off_req;
+always @(posedge clk) begin
+	if (rst)
+		is_power_off_req <= 1'b0;
+	else if (!irq_out && !drive_rcw_src)
+		is_power_off_req <= ~CPLD_INTERRUPT_CFG_RCW_SRC2;
+end
+
 wire reset_req_out;
 reset_req #(
 	.EXTEND_COUNT(3'd5)
@@ -148,12 +156,23 @@ reset_req #(
 	.ce(ce_8hz),
 
 	.reset_req_n(RESET_REQ_n),
+	.enable(!is_power_off_req),
 	.reset_req_out(reset_req_out)
 );
 
 wire cpu_reset;
 assign RESET_REQ_n = (reset_req_out | cpu_reset) ? 1'b0 : 1'bz;
 assign HRESET_n = (reset_req_out | cpu_reset) ? 1'b0 : 1'bz;
+
+wire power_off_by_reset;
+async_negedge_latch_sync_out power_off_latch (
+	.clk(clk),
+
+	.in(RESET_REQ_n),
+	.enable(is_power_off_req),
+	.clear(power_off_by_reset),
+	.sync_out_edge(power_off_by_reset)
+);
 
 wire ce_32khz;
 wire ce_8hz;
@@ -191,13 +210,6 @@ assign SER1_TX_CFG_RCW_SRC1 = (drive_rcw_src & ~force_recovery) ? rcw_src[1] : 1
 assign CPLD_INTERRUPT_CFG_RCW_SRC2 =
 	drive_rcw_src ? (force_recovery ? 1'bz : rcw_src[2]) :
 	FORCE_RECOV_n ? (irq_out ? 1'b0 : 1'bz) : ~irq_out;
-
-reg power_off_latch;
-always @(posedge clk) begin
-	if (!irq_out)
-		power_off_latch <= ~CPLD_INTERRUPT_CFG_RCW_SRC2;
-end
-wire power_off_by_reset = power_off_latch && rst_posedge;
 
 wire i2c_bus_reset_sda_out;
 wire i2c_bus_reset_scl_out;
