@@ -200,7 +200,7 @@ always @(posedge clk) begin
 	if (rst_posedge)
 		force_recovery <= force_recov | wdt_force_recovery_mode;
 end
-wire drive_rcw_src = rst | rst0;
+wire drive_rcw_src = pwr_enable & (rst | rst0);
 
 wire irq_out;
 wire emmc_boot;
@@ -208,6 +208,7 @@ wire [2:0] rcw_src = emmc_boot ? 3'b001 : 3'b010;
 assign SER2_TX_CFG_RCW_SRC0 = (drive_rcw_src & ~force_recovery) ? rcw_src[0] : 1'bz;
 assign SER1_TX_CFG_RCW_SRC1 = (drive_rcw_src & ~force_recovery) ? rcw_src[1] : 1'bz;
 assign CPLD_INTERRUPT_CFG_RCW_SRC2 =
+	!pwr_enable ? 1'bz :
 	drive_rcw_src ? (force_recovery ? 1'bz : rcw_src[2]) :
 	FORCE_RECOV_n ? (irq_out ? 1'b0 : 1'bz) : ~irq_out;
 
