@@ -7,6 +7,7 @@ module watchdog #(
 	input rst,
 	input clk,
 	input ce,
+	input pwr_is_off,
 
 	input [4:0] csr_a,
 	input [7:0] csr_di,
@@ -33,7 +34,7 @@ reg [7:0] wdt_tout;
 reg [7:0] wdt_cnt;
 always @(posedge clk) begin
 	/* counter reset is gated and only allowed in non-failsafe mode */
-	if (rst & ~wdt_en[1])
+	if (pwr_is_off || (rst && !wdt_en[1]))
 		wdt_cnt <= DEFAULT_TIMEOUT;
 	else if (wdt_kick)
 		wdt_cnt <= wdt_tout;

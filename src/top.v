@@ -368,6 +368,7 @@ watchdog #(
 	.rst(rst),
 	.clk(clk),
 	.ce(ce_1hz),
+	.pwr_is_off(!pwr_enable),
 
 	.csr_a(csr_a),
 	.csr_di(csr_di),
