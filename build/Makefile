@@ -10,7 +10,7 @@ SRCS += ../src/gpi.v ../src/gpo.v ../src/tacho.v ../src/usbfixer.v
 SRCS += ../src/clockgen.v ../src/watchdog.v ../src/cfg_ctrl_altera_ufm.v
 SRCS += ../src/ro_reg.v ../src/i2c_bus_reset.v ../src/power_fsm.v
 SRCS += ../src/intc.v ../src/sync_edge.v ../src/reset_req.v
-SRCS += ../src/config_trits.v
+SRCS += ../src/async_negedge_latch_sync_out.v ../src/config_trits.v
 
 all: $(PROJECT).jbc summary
 
