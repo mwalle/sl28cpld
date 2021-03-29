@@ -162,3 +162,6 @@ set_location_assignment PIN_K5 -to WOL_INT_GBE_n
 
 set_location_assignment PIN_L5 -to ESPI_RESET_3V3_n
 set_location_assignment PIN_L2 -to RESET_OUT_3V3_n
+
+set_location_assignment PIN_F2 -to PCIE_WAKE_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PCIE_WAKE_n

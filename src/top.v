@@ -77,6 +77,7 @@ module sl28_top #(
 	input SMB_ALERT_1V8_n,
 	input RTC_INT_n,
 	input WOL_INT_GBE_n,
+	input PCIE_WAKE_n,
 
 	/* USB control */
 	inout USB3_EN_OC_n,
@@ -120,6 +121,14 @@ sync_edge sync_edge_wol_int (
 	.out_negedge(wol_int_negedge)
 );
 
+wire pcie_wake_negedge;
+sync_edge sync_edge_pcie_wake (
+	.clk(clk),
+
+	.in(PCIE_WAKE_n),
+	.out_negedge(pcie_wake_negedge)
+);
+
 wire initial_pwr_off;
 wire power_on;
 wire power_off;
@@ -140,7 +149,7 @@ power_fsm #(
 );
 assign PWR_FORCE_DISABLE_n = pwr_enable ? 1'bz : 1'b0;
 assign power_off = power_off_by_reg | power_off_by_reset;
-assign power_on = rtc_int_negedge | wol_int_negedge;
+assign power_on = rtc_int_negedge | wol_int_negedge | pcie_wake_negedge;
 
 reg is_power_off_req;
 always @(posedge clk) begin
