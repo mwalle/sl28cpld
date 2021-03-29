@@ -13,6 +13,7 @@ module sl28_top #(
 	output HRESET_n,
 
 	/* peripheral resets */
+	output RESET_OUT_3V3_n,
 	output PCIE_A_RST_n,
 	output PCIE_B_RST_n,
 	output PCIE_C_RST_n,
@@ -22,6 +23,7 @@ module sl28_top #(
 	output SDIO_PWR_EN,
 	output EMMC_RST_n,
 	output GBE_FORCE_RST_n,
+	output ESPI_RESET_3V3_n,
 
 	/* board control & interrupt */
 	output PWR_FORCE_DISABLE_n,
@@ -193,6 +195,8 @@ sync_edge sync_edge_poreset (
 	.out0(rst0),
 	.out_posedge(rst_posedge)
 );
+assign ESPI_RESET_3V3_n = rst;
+assign RESET_OUT_3V3_n = rst;
 
 reg force_recovery;
 initial force_recovery = 1'b0;
