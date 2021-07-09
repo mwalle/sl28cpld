@@ -97,7 +97,9 @@ module sl28_top #(
 	inout [3:0] BOARD_CONFIG
 );
 
+wire usbfixer_disabled;
 usbfixer usbfixer (
+	.enable(!usbfixer_disabled),
 	.usb_en_oc_n(USB3_EN_OC_n),
 	.usb_drvvbus(USB3_DRVVBUS),
 	.usb_pwrfault(USB3_PWRFAULT_3V3)
@@ -354,6 +356,7 @@ assign CLKGEN_5P49V6967_OEB_n = cfg[7] ? 1'bz : 1'b1;
 wire keep_gbe_phy_in_reset = !cfg[8];
 wire keep_usb2517_in_reset = !cfg[9];
 wire keep_ptn3460_in_reset = !cfg[10];
+assign usbfixer_disabled = !cfg[11];
 wire gbe_phy_reset_enabled = !cfg[12];
 
 ro_reg #(
