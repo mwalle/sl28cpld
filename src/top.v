@@ -650,7 +650,7 @@ wire charger_prsnt;
 sync_edge sync_edge_charger_prsnt (
 	.clk(clk),
 
-	.in(~CHARGER_PRSNT_n),
+	.in(CHARGER_PRSNT_n),
 	.out(charger_prsnt)
 );
 
@@ -658,7 +658,7 @@ wire charging;
 sync_edge sync_edge_charging (
 	.clk(clk),
 
-	.in(~CHARGING_n),
+	.in(CHARGING_n),
 	.out(charging)
 );
 
@@ -666,7 +666,7 @@ wire lid;
 sync_edge sync_edge_lid (
 	.clk(clk),
 
-	.in(~LID_n),
+	.in(LID_n),
 	.out(lid)
 );
 
@@ -674,7 +674,7 @@ wire batlow;
 sync_edge sync_edge_batlow (
 	.clk(clk),
 
-	.in(~BATLOW_n),
+	.in(BATLOW_n),
 	.out(batlow)
 );
 
@@ -704,8 +704,8 @@ gpi #(
 		lid,
 		batlow,
 		sleep,
-		force_recov,
-		power_btn
+		~force_recov,
+		~power_btn
 	})
 );
 
