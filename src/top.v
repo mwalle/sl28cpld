@@ -206,8 +206,8 @@ sync_edge sync_edge_poreset (
 	.out0(rst0),
 	.out_posedge(rst_posedge)
 );
-assign ESPI_RESET_3V3_n = rst;
-assign RESET_OUT_3V3_n = rst;
+assign ESPI_RESET_3V3_n = ~rst;
+assign RESET_OUT_3V3_n = ~rst;
 
 reg force_recovery;
 initial force_recovery = 1'b0;
