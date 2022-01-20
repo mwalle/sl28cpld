@@ -6,6 +6,7 @@ module clockgen (
 );
 
 reg [7:0] cnt_32khz;
+initial cnt_32khz = 8'd0;
 always @(posedge clk) begin
 	ce_32khz <= 1'b0;
 	cnt_32khz <= cnt_32khz + 8'd1;
@@ -16,6 +17,7 @@ always @(posedge clk) begin
 end
 
 reg [11:0] cnt_8hz;
+initial cnt_8hz = 12'd0;
 always @(posedge clk) begin
 	ce_8hz <= 1'b0;
 	if (ce_32khz)
@@ -27,6 +29,7 @@ always @(posedge clk) begin
 end
 
 reg [3:0] cnt_1hz;
+initial cnt_1hz = 4'd0;
 always @(posedge clk) begin
 	ce_1hz <= 1'd0;
 	if (ce_8hz)

@@ -9,10 +9,6 @@ clockgen dut(
 	.clk(clk)
 );
 
-initial dut.cnt_32khz = 0;
-initial dut.cnt_8hz = 0;
-initial dut.cnt_1hz = 0;
-
 always #2000000000 $finish;
 
 initial $dumpfile("clockgen.lx2");
