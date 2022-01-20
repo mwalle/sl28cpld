@@ -14,7 +14,7 @@ module gpi #(
 );
 
 always @(*) begin
-	csr_do = {NUM_GPIOS {1'b0}};
+	csr_do = 8'b0;
 	if (csr_a == BASE_ADDR)
 		csr_do = {{8-NUM_GPIOS {1'b0}}, in};
 end
