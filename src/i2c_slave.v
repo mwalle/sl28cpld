@@ -8,7 +8,7 @@ module i2c_slave #(
 	output reg sda_out,
 	input scl,
 
-	output [4:0] csr_a,
+	output [7:0] csr_a,
 	input [7:0] csr_di,
 	output csr_we,
 	output [7:0] csr_do
@@ -107,18 +107,18 @@ always @(*) begin
 	end
 end
 
-reg [4:0] idx_ptr;
+reg [7:0] idx_ptr;
 always @(posedge clk) begin
 	if (rst)
-		idx_ptr <= 5'h0;
+		idx_ptr <= 8'd0;
 	else if (ack_bit) begin
 		case (state)
 		IDX_PTR:
-			idx_ptr <= input_shift[4:0];
+			idx_ptr <= input_shift[7:0];
 
 		READ,
 		WRITE:
-			idx_ptr <= idx_ptr + 5'b1;
+			idx_ptr <= idx_ptr + 8'd1;
 		endcase
 	end
 end

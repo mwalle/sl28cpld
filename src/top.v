@@ -312,6 +312,7 @@ assign csr_do = csr_do_cfg_ctrl |
 		csr_do_intc;
 
 wire i2c_slave_sda_out;
+wire [2:0] csr_a_unused;
 i2c_slave i2c_slave(
 	.rst(rst),
 	.clk(clk),
@@ -320,7 +321,7 @@ i2c_slave i2c_slave(
 	.sda_out(i2c_slave_sda_out),
 	.scl(I2C_LOCAL_SCL_3V3),
 
-	.csr_a(csr_a),
+	.csr_a({csr_a_unused, csr_a}),
 	.csr_di(csr_do),
 	.csr_we(csr_we),
 	.csr_do(csr_di)
