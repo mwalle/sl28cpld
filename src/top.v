@@ -112,6 +112,10 @@ sync_edge sync_edge_cfg_read_done (
 	.clk(clk),
 
 	.in(cfg_read_done),
+	.out(),
+	.out0(),
+	.out_edge(),
+	.out_negedge(),
 	.out_posedge(cfg_read_done_posedge)
 );
 
@@ -120,7 +124,11 @@ sync_edge sync_edge_wol_int (
 	.clk(clk),
 
 	.in(WOL_INT_GBE_n),
-	.out_negedge(wol_int_negedge)
+	.out(),
+	.out0(),
+	.out_edge(),
+	.out_negedge(wol_int_negedge),
+	.out_posedge()
 );
 
 wire pcie_wake_negedge;
@@ -128,7 +136,11 @@ sync_edge sync_edge_pcie_wake (
 	.clk(clk),
 
 	.in(PCIE_WAKE_n),
-	.out_negedge(pcie_wake_negedge)
+	.out(),
+	.out0(),
+	.out_edge(),
+	.out_negedge(pcie_wake_negedge),
+	.out_posedge()
 );
 
 wire initial_pwr_off;
@@ -184,6 +196,8 @@ async_negedge_latch_sync_out power_off_latch (
 	.in(RESET_REQ_n),
 	.enable(is_power_off_req),
 	.clear(power_off_by_reset),
+	.async_out(),
+	.sync_out(),
 	.sync_out_edge(power_off_by_reset)
 );
 
@@ -204,7 +218,9 @@ sync_edge sync_edge_poreset (
 	.in(~PORESET_n),
 	.out(rst),
 	.out0(rst0),
-	.out_posedge(rst_posedge)
+	.out_edge(),
+	.out_posedge(rst_posedge),
+	.out_negedge()
 );
 assign ESPI_RESET_3V3_n = ~rst;
 assign RESET_OUT_3V3_n = ~rst;
@@ -618,7 +634,10 @@ sync_edge sync_edge_sleep (
 
 	.in(SLEEP_n),
 	.out(sleep),
-	.out_negedge(sleep_negedge)
+	.out0(),
+	.out_edge(),
+	.out_negedge(sleep_negedge),
+	.out_posedge()
 );
 
 wire power_btn;
@@ -628,7 +647,11 @@ sync_edge sync_edge_power_btn (
 
 	.in(~POWER_BTN_n),
 	.out(power_btn),
-	.out_edge(power_btn_edge)
+	.out(),
+	.out0(),
+	.out_edge(power_btn_edge),
+	.out_negedge(),
+	.out_posedge()
 );
 
 wire rtc_int_negedge;
@@ -636,7 +659,11 @@ sync_edge sync_edge_rtc_int (
 	.clk(clk),
 
 	.in(RTC_INT_n),
-	.out_negedge(rtc_int_negedge)
+	.out(),
+	.out0(),
+	.out_edge(),
+	.out_negedge(rtc_int_negedge),
+	.out_posedge()
 );
 
 wire smb_alert_negedge;
@@ -644,7 +671,11 @@ sync_edge sync_edge_smb_alert (
 	.clk(clk),
 
 	.in(SMB_ALERT_1V8_n),
-	.out_negedge(smb_alert_negedge)
+	.out(),
+	.out0(),
+	.out_edge(),
+	.out_negedge(smb_alert_negedge),
+	.out_posedge()
 );
 
 wire charger_prsnt;
@@ -652,7 +683,11 @@ sync_edge sync_edge_charger_prsnt (
 	.clk(clk),
 
 	.in(CHARGER_PRSNT_n),
-	.out(charger_prsnt)
+	.out(charger_prsnt),
+	.out0(),
+	.out_edge(),
+	.out_negedge(),
+	.out_posedge()
 );
 
 wire charging;
@@ -660,7 +695,11 @@ sync_edge sync_edge_charging (
 	.clk(clk),
 
 	.in(CHARGING_n),
-	.out(charging)
+	.out(charging),
+	.out0(),
+	.out_edge(),
+	.out_negedge(),
+	.out_posedge()
 );
 
 wire lid;
@@ -668,7 +707,11 @@ sync_edge sync_edge_lid (
 	.clk(clk),
 
 	.in(LID_n),
-	.out(lid)
+	.out(lid),
+	.out0(),
+	.out_edge(),
+	.out_negedge(),
+	.out_posedge()
 );
 
 wire batlow;
@@ -676,7 +719,11 @@ sync_edge sync_edge_batlow (
 	.clk(clk),
 
 	.in(BATLOW_n),
-	.out(batlow)
+	.out(batlow),
+	.out0(),
+	.out_edge(),
+	.out_negedge(),
+	.out_posedge()
 );
 
 wire force_recov;
@@ -684,7 +731,11 @@ sync_edge sync_edge_force_recov (
 	.clk(clk),
 
 	.in(~FORCE_RECOV_n),
-	.out(force_recov)
+	.out(force_recov),
+	.out0(),
+	.out_edge(),
+	.out_negedge(),
+	.out_posedge()
 );
 
 gpi #(

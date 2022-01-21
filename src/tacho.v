@@ -18,7 +18,11 @@ sync_edge sync_edge_tacho_sleep (
 	.clk(clk),
 
 	.in(tacho_in),
-	.out_negedge(tacho_negedge)
+	.out(),
+	.out0(),
+	.out_edge(),
+	.out_negedge(tacho_negedge),
+	.out_posedge()
 );
 
 reg [9:0] counter;

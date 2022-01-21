@@ -22,6 +22,9 @@ sync_edge sync_edge_latch (
 
 	.in(async_out),
 	.out(sync_out),
+	.out0(),
+	.out_edge(),
+	.out_negedge(),
 	.out_posedge(sync_out_edge)
 );
 

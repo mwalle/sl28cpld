@@ -21,8 +21,10 @@ sync_edge sync_edge_sda (
 
 	.in(sda),
 	.out(sda_in),
-	.out_posedge(sda_posedge),
-	.out_negedge(sda_negedge)
+	.out0(),
+	.out_edge(),
+	.out_negedge(sda_negedge),
+	.out_posedge(sda_posedge)
 );
 
 wire scl_in, scl_posedge, scl_negedge;
@@ -31,8 +33,10 @@ sync_edge sync_edge_scl (
 
 	.in(scl),
 	.out(scl_in),
-	.out_posedge(scl_posedge),
-	.out_negedge(scl_negedge)
+	.out0(),
+	.out_edge(),
+	.out_negedge(scl_negedge),
+	.out_posedge(scl_posedge)
 );
 
 wire start   = sda_negedge & scl_in;

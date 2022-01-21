@@ -28,7 +28,10 @@ sync_edge #(
 
 	.in(in),
 	.out(in_sync),
-	.out_edge(in_edge)
+	.out0(),
+	.out_edge(in_edge),
+	.out_negedge(),
+	.out_posedge()
 );
 
 reg [NUM_GPIOS-1:0] ie;

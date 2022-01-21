@@ -17,7 +17,8 @@ async_negedge_latch_sync_out latch (
 	.enable(enable),
 	.clear(clear),
 	.async_out(reset_req_out),
-	.sync_out(reset_req_sync)
+	.sync_out(reset_req_sync),
+	.sync_out_edge()
 );
 
 reg clear;
