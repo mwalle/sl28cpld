@@ -1,3 +1,13 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Power state machine.
+ *
+ * Rather board specific. Will control the power state of the board during
+ * power-up and runtime.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module power_fsm #(
 	parameter LONG_PRESS_DELAY = 3'd0
 ) (

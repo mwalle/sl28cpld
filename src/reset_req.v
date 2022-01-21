@@ -1,3 +1,13 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Board specific reset handling.
+ *
+ * There is a need to extend an incoming reset pulse to meet the SoC reset
+ * input requirements.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module reset_req #(
 	parameter EXTEND_COUNT = 3'h0
 ) (

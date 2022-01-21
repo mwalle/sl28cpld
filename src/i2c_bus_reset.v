@@ -1,3 +1,14 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * I2C bus recovery module.
+ *
+ * I2C busses might become stuck on a board reset. That is, when the
+ * a board reset occurs during an I2C transaction and the I2C slave pulls
+ * the SDA line low. In this case we have to do an I2C bus recovery.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module i2c_bus_reset (
 	input clk,
 	input ce,

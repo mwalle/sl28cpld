@@ -1,3 +1,12 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Simple GPIO module with interrupt support.
+ *
+ * Only interrupts on both edges (not selectable) are supported.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module gpio #(
 	parameter BASE_ADDR = 5'b0,
 	parameter NUM_GPIOS = 8,

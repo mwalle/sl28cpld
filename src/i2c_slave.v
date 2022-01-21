@@ -1,3 +1,13 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * I2C slave interface and bridge.
+ *
+ * Expose the internal registers via an I2C slave. Automatic index pointer
+ * incrementing is supported.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module i2c_slave #(
 	parameter I2C_ADDRESS = 7'h4a
 ) (

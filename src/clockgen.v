@@ -1,3 +1,11 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Clock Enable generator to be used with the internal oscillator of the
+ * MAX V. The frequency is about ~4.6MHz.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module clockgen (
 	input clk,
 	output reg ce_32khz,

@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Generic input pin synchronizer.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module sync_edge #(
 	parameter WIDTH = 1
 ) (

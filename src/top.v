@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * sl28 top module
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module sl28_top #(
 	CPLD_VERSION = 8'h20
 ) (

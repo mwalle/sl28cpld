@@ -1,3 +1,15 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Configuration trits.
+ *
+ * To save precious pins on the CPLD, an input can be either tied to GND,
+ * tied to Vcc or left open. For this to work, you have to connect two
+ * trits inputs with a resistor, thus you can only have an even number of
+ * trits.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module config_trits #(
 	parameter BASE_ADDR = 5'h0
 ) (

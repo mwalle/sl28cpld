@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Simple level triggered interrupt controller.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module intc #(
 	parameter BASE_ADDR = 5'b0,
 	parameter NUM_INTS = 8

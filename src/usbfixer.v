@@ -1,3 +1,14 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * USB fixer module.
+ *
+ * The SMARC standard combines both the enable and the fault signal into
+ * one signal. But virtually all SoCs and USB controllers need them as
+ * different signals.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module usbfixer (
 	input enable,
 	inout usb_en_oc_n,

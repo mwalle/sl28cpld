@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Asynchronous latch with synchronous output.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module async_negedge_latch_sync_out (
 	input clk,
 

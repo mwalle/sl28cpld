@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Simple GPI (input only) module.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module gpi #(
 	parameter BASE_ADDR = 5'b0,
 	parameter NUM_GPIOS = 8

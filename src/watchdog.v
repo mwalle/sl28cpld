@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Simple watchdog with recovery mode.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module watchdog #(
 	parameter BASE_ADDR = 5'h0,
 	parameter DEFAULT_OE = 2'b00,

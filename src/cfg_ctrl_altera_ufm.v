@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Simple 16bit UFM storage module for Altera CPLDs.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module cfg_ctrl_altera_ufm #(
 	parameter BASE_ADDR = 5'h0
 ) (

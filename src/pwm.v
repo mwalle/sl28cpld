@@ -1,3 +1,10 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Simple glitch-free pulse-width modulation module.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module pwm #(
 	parameter BASE_ADDR = 5'h0
 ) (

@@ -1,3 +1,13 @@
+// SPDX-License-Identifier: CERN-OHL-P-2.0
+/*
+ * Simple tacho input module.
+ *
+ * Provides two ranges which are automatically switched based on the input
+ * RPM. They have different resolutions.
+ *
+ * Copyright (c) 2020-2022 Michael Walle <michael@walle.cc>
+ */
+
 module tacho #(
 	parameter BASE_ADDR = 5'h0
 ) (
