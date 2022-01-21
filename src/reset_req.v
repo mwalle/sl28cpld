@@ -30,7 +30,7 @@ always @(posedge clk) begin
 	else if (reset_req_cnt == EXTEND_COUNT)
 		clear <= 1'b1;
 	else if (ce)
-		reset_req_cnt = reset_req_cnt + 3'd1;
+		reset_req_cnt <= reset_req_cnt + 3'd1;
 end
 
 endmodule
