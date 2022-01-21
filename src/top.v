@@ -376,7 +376,7 @@ wire keep_ptn3460_in_reset = !cfg[10];
 assign usbfixer_disabled = !cfg[11];
 wire gbe_phy_reset_enabled = !cfg[12];
 
-ro_reg #(
+gpi #(
 	.BASE_ADDR(5'h3)
 ) cpld_version (
 	.rst(rst),
@@ -418,7 +418,7 @@ watchdog #(
 assign cpu_reset = wdt_out_strobe[0];
 assign WDT_TIME_OUT_n = ~wdt_out[1];
 
-ro_reg #(
+gpi #(
 	.BASE_ADDR(5'h8)
 ) board_control (
 	.rst(rst),
