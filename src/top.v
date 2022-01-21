@@ -774,7 +774,7 @@ intc #(
 	.csr_we(csr_we),
 	.csr_do(csr_do_intc),
 
-	.int({
+	.irqs_in({
 		wdt_irq,
 		sleep_negedge,
 		power_btn_edge,

@@ -29,7 +29,7 @@ reg drclk_r;
 reg drdin;
 reg drshft_r;
 reg erase;
-reg program;
+reg program_r;
 
 altufm_none ufm(
 	.arclk(arclk),
@@ -40,7 +40,7 @@ altufm_none ufm(
 	.drshft(drshft),
 	.erase(erase),
 	.oscena(1'b1),
-	.program(program),
+	.program(program_r),
 
 	.busy(busy),
 	.drdout(drdout),
@@ -100,12 +100,12 @@ always @(posedge clk) begin
 	if (rst || !done) begin
 		drclk_r <= 1'b1;
 		drdin <= 1'b0;
-		program <= 1'b0;
+		program_r <= 1'b0;
 		erase <= 1'b0;
 		drshft_r <= 1'b1;
 	end else
 		if (csr_we && csr_a == BASE_ADDR + R_UFM_CTRL)
-			{drshft_r, erase, program, drdin, drclk_r} <= csr_di[5:1];
+			{drshft_r, erase, program_r, drdin, drclk_r} <= csr_di[5:1];
 end
 
 always @(*) begin
@@ -116,7 +116,7 @@ always @(*) begin
 	BASE_ADDR + R_UFM_DATA1:
 		csr_do = cfg[7:0];
 	BASE_ADDR + R_UFM_CTRL:
-		csr_do = {busy, drdout, drshft_r, erase, program, drdin, drclk_r, 1'b0};
+		csr_do = {busy, drdout, drshft_r, erase, program_r, drdin, drclk_r, 1'b0};
 	endcase
 end
 

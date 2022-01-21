@@ -10,7 +10,7 @@ module intc #(
 	input csr_we,
 	output reg [7:0] csr_do,
 
-	input [NUM_INTS-1:0] int,
+	input [NUM_INTS-1:0] irqs_in,
 	output reg irq
 );
 
@@ -31,8 +31,8 @@ always @(posedge clk) begin
 		irq <= 1'b0;
 	end else begin
 		irq <= 1'b0;
-		ip <= ip | int;
-		if (|(int & ie))
+		ip <= ip | irqs_in;
+		if (|(irqs_in & ie))
 			irq <= 1'b1;
 		if (csr_we) begin
 			case (csr_a)
