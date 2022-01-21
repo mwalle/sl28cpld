@@ -1,5 +1,5 @@
 module i2c_slave #(
-	parameter i2c_address = 7'h4a
+	parameter I2C_ADDRESS = 7'h4a
 ) (
 	input rst,
 	input clk,
@@ -61,7 +61,7 @@ always @(posedge clk) begin
 end
 
 /* decode data */
-wire address_match = input_shift[7:1] == i2c_address;
+wire address_match = input_shift[7:1] == I2C_ADDRESS;
 wire read_write = input_shift[0];
 wire master_ack = ~sda_in;
 
