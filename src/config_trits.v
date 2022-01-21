@@ -15,7 +15,7 @@ module config_trits #(
 
 reg oe;
 reg outval;
-assign trits = oe ? {4 {outval}} : 4'bz;
+assign trits = oe ? {4 {outval}} : 4'bzzzz;
 
 always @(posedge clk) begin
 	if (rst) begin
