@@ -17,10 +17,10 @@ module intc #(
 reg [NUM_INTS-1:0] ie;
 reg [NUM_INTS-1:0] ip;
 always @(*) begin
-	csr_do = 8'b0;
 	case (csr_a)
 		BASE_ADDR + 5'h0: csr_do = {{8-NUM_INTS {1'b0}}, ie};
 		BASE_ADDR + 5'h1: csr_do = {{8-NUM_INTS {1'b0}}, ip};
+		default: csr_do = 8'b0;
 	endcase
 end
 

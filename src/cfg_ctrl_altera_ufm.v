@@ -109,7 +109,6 @@ always @(posedge clk) begin
 end
 
 always @(*) begin
-	csr_do = 8'b0;
 	case (csr_a)
 	BASE_ADDR + R_UFM_DATA0:
 		csr_do = cfg[15:8];
@@ -117,6 +116,8 @@ always @(*) begin
 		csr_do = cfg[7:0];
 	BASE_ADDR + R_UFM_CTRL:
 		csr_do = {busy, drdout, drshft_r, erase, program_r, drdin, drclk_r, 1'b0};
+	default:
+		csr_do = 8'b0;
 	endcase
 end
 

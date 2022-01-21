@@ -107,6 +107,7 @@ always @(*) begin
 		READ:
 			if (!master_ack)
 				next_state = IDLE;
+		default: ;
 		endcase
 	end
 end

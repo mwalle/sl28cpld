@@ -3,22 +3,22 @@ module pwm #(
 ) (
 	input rst,
 	input clk,
+	input pwm_ce,
 
 	input [4:0] csr_a,
 	input [7:0] csr_di,
 	input csr_we,
 	output reg [7:0] csr_do,
 
-	input pwm_ce,
 	output reg pwm_en,
 	output pwm_out
 );
 
 always @(*) begin
-	csr_do = 8'b0;
 	case (csr_a)
 		BASE_ADDR + 5'h0: csr_do = {pwm_en, 5'b0, pwm_scale};
 		BASE_ADDR + 5'h1: csr_do = {1'b0, duty_cycle};
+		default: csr_do = 8'b0;
 	endcase
 end
 

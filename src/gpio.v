@@ -37,13 +37,13 @@ sync_edge #(
 reg [NUM_GPIOS-1:0] ie;
 reg [NUM_GPIOS-1:0] ip;
 always @(*) begin
-	csr_do = 8'b0;
 	case (csr_a)
 		BASE_ADDR + 5'h0: csr_do = {{8-NUM_GPIOS {1'b0}}, oe};
 		BASE_ADDR + 5'h1: csr_do = {{8-NUM_GPIOS {1'b0}}, out};
 		BASE_ADDR + 5'h2: csr_do = {{8-NUM_GPIOS {1'b0}}, in_sync};
 		BASE_ADDR + 5'h3: csr_do = {{8-NUM_GPIOS {1'b0}}, ie};
 		BASE_ADDR + 5'h4: csr_do = {{8-NUM_GPIOS {1'b0}}, ip};
+		default: csr_do = 8'b0;
 	endcase
 end
 

@@ -71,11 +71,11 @@ end
 wire wdt_kick = csr_we & (csr_a == BASE_ADDR + R_KICK) & (csr_di == KICK_VALUE);
 
 always @(*) begin
-	csr_do = 8'b0;
 	case (csr_a)
 		BASE_ADDR + R_CTRL: csr_do = {wdt_oe, 3'b0, wdt_locked, wdt_en};
 		BASE_ADDR + R_TOUT: csr_do = wdt_tout;
 		BASE_ADDR + R_CNT: csr_do = wdt_cnt;
+		default: csr_do = 8'b0;
 	endcase
 end
 
