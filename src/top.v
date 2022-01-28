@@ -193,6 +193,12 @@ reset_req #(
 );
 
 wire cpu_reset;
+/*
+ * The RESET_REQ# output of the SoC is a push-pull output driver. Due to
+ * the wiring on the board, we cannot win if we pull the line low. As
+ * a workaround, pull HRESET# low, too. This will make the SoC release
+ * the RESET_REQ# line.
+ */
 assign RESET_REQ_n = (reset_req_out | cpu_reset) ? 1'b0 : 1'bz;
 assign HRESET_n = (reset_req_out | cpu_reset) ? 1'b0 : 1'bz;
 
