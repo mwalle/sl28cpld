@@ -648,7 +648,7 @@ gpo #(
 assign PTN3460_RST_n = (rst | ptn3460_reset | keep_ptn3460_in_reset) ? 1'b0 : 1'bz;
 assign PTN3460_PD_n = (rst | ptn3460_powerdown | keep_ptn3460_in_reset) ? 1'b0 : 1'bz;
 assign EMMC_RST_n = (rst | emmc_reset) ? 1'b0 : 1'bz;
-assign SDIO_PWR_EN = sdio_pwr_enable & !rst;
+assign SDIO_PWR_EN = (rst | ~sdio_pwr_enable) ? 1'b0 : 1'bz;
 assign USB2517_RST_n = (rst | keep_usb2517_in_reset) ? 1'b0 : 1'bz;
 assign GBE_FORCE_RST_n = ((rst & gbe_phy_reset_enabled) | keep_gbe_phy_in_reset) ? 1'b0 : 1'bz;
 
