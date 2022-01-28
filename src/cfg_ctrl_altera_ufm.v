@@ -64,7 +64,7 @@ assign arclk = clk & state[0];
 assign drclk = done ? drclk_r : (clk & state[1]);
 assign drshft = done ? drshft_r : state[2];
 assign done = state[3];
-assign cfg = (done & ~force_recovery) ? ufm_data : 16'hffff;
+assign cfg = ufm_data;
 
 reg [3:0] state;
 reg [15:0] ufm_data;
@@ -90,7 +90,7 @@ always @(posedge clk) begin
 	end
 
 	SHIFT_DATA: begin
-		ufm_data <= {ufm_data[14:0], drdout};
+		ufm_data <= {ufm_data[14:0], force_recovery ? 1'b1 : drdout};
 		if (counter == 4'd15)
 			state <= DONE;
 		else
