@@ -249,8 +249,13 @@ wire drive_rcw_src = pwr_enable & (rst | rst0);
 wire irq_out;
 wire emmc_boot;
 wire [2:0] rcw_src = emmc_boot ? 3'b001 : 3'b010;
-assign SER2_TX_CFG_RCW_SRC0 = (drive_rcw_src & ~force_recovery) ? rcw_src[0] : 1'bz;
-assign SER1_TX_CFG_RCW_SRC1 = (drive_rcw_src & ~force_recovery) ? rcw_src[1] : 1'bz;
+assign SER2_TX_CFG_RCW_SRC0 = force_recovery ? 1'bz :
+			      drive_rcw_src ? rcw_src[0] :
+			      1'bz;
+assign SER1_TX_CFG_RCW_SRC1 = force_recovery ? 1'bz :
+			      drive_rcw_src ? rcw_src[1] :
+			      1'bz;
+
 /*
  * CPLD_INTERRUPT_CFG_RCW_SRC2 is bidirectional. It is either an interrupt
  * pulse driven by the CPLD or an input to signal an poweroff driven by the
@@ -259,10 +264,9 @@ assign SER1_TX_CFG_RCW_SRC1 = (drive_rcw_src & ~force_recovery) ? rcw_src[1] : 1
  * resistor on this signal is disabled. Thus, the power-off request will
  * not work in recovery mode, because we need to be push-pull.
  */
-assign CPLD_INTERRUPT_CFG_RCW_SRC2 =
-	!pwr_enable ? 1'bz :
-	drive_rcw_src ? (force_recovery ? 1'bz : rcw_src[2]) :
-	FORCE_RECOV_n ? (irq_out ? 1'b0 : 1'bz) : ~irq_out;
+assign CPLD_INTERRUPT_CFG_RCW_SRC2 = drive_rcw_src ? (force_recovery ? 1'bz : rcw_src[2]) :
+				     force_recov ? ~irq_out :
+				     irq_out ? 1'b0 : 1'bz;
 
 wire i2c_bus_reset_sda_out;
 wire i2c_bus_reset_scl_out;
