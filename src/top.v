@@ -251,6 +251,14 @@ wire emmc_boot;
 wire [2:0] rcw_src = emmc_boot ? 3'b001 : 3'b010;
 assign SER2_TX_CFG_RCW_SRC0 = (drive_rcw_src & ~force_recovery) ? rcw_src[0] : 1'bz;
 assign SER1_TX_CFG_RCW_SRC1 = (drive_rcw_src & ~force_recovery) ? rcw_src[1] : 1'bz;
+/*
+ * CPLD_INTERRUPT_CFG_RCW_SRC2 is bidirectional. It is either an interrupt
+ * pulse driven by the CPLD or an input to signal an poweroff driven by the
+ * SoC. Therefore, this needs to be an open drain output. But this is not
+ * possible if FORCE_RECOV# is asserted, because in this case the pull-up
+ * resistor on this signal is disabled. Thus, the power-off request will
+ * not work in recovery mode, because we need to be push-pull.
+ */
 assign CPLD_INTERRUPT_CFG_RCW_SRC2 =
 	!pwr_enable ? 1'bz :
 	drive_rcw_src ? (force_recovery ? 1'bz : rcw_src[2]) :
