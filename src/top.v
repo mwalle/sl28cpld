@@ -387,19 +387,19 @@ cfg_ctrl_altera_ufm #(
 	.osc(clk)
 );
 
-assign initial_pwr_off = !cfg[0];
-assign emmc_boot = !cfg[1];
-wire watchdog_enabled = !cfg[2];
-wire failsafe_watchdog_disabled = !cfg[3];
-assign I2C_SDA_5P49V6967_SEL0 = cfg[4] ? 1'bz : 1'b1;
-assign I2C_SDA_5P49V6967_SEL1 = cfg[5] ? 1'bz : 1'b1;
-assign CLKGEN_5P49V6967_OEA_n = cfg[6] ? 1'bz : 1'b1;
-assign CLKGEN_5P49V6967_OEB_n = cfg[7] ? 1'bz : 1'b1;
-wire keep_gbe_phy_in_reset = !cfg[8];
-wire keep_usb2517_in_reset = !cfg[9];
-wire keep_ptn3460_in_reset = !cfg[10];
-assign usbfixer_disabled = !cfg[11];
-wire gbe_phy_reset_enabled = !cfg[12];
+assign initial_pwr_off = ~cfg[0];
+assign emmc_boot = ~cfg[1];
+wire watchdog_enabled = ~cfg[2];
+wire failsafe_watchdog_disabled = ~cfg[3];
+assign I2C_SDA_5P49V6967_SEL0 = ~cfg[4] ? 1'b1 : 1'bz;
+assign I2C_SDA_5P49V6967_SEL1 = ~cfg[5] ? 1'b1 : 1'bz;
+assign CLKGEN_5P49V6967_OEA_n = ~cfg[6] ? 1'b1 : 1'bz;
+assign CLKGEN_5P49V6967_OEB_n = ~cfg[7] ? 1'b1 : 1'bz;
+wire keep_gbe_phy_in_reset = ~cfg[8];
+wire keep_usb2517_in_reset = ~cfg[9];
+wire keep_ptn3460_in_reset = ~cfg[10];
+assign usbfixer_disabled = ~cfg[11];
+wire gbe_phy_reset_enabled = ~cfg[12];
 
 gpi #(
 	.BASE_ADDR(5'h3)
@@ -427,14 +427,14 @@ watchdog #(
 	.rst(rst),
 	.clk(clk),
 	.ce(ce_1hz),
-	.pwr_is_off(!pwr_enable),
+	.pwr_is_off(~pwr_enable),
 
 	.csr_a(csr_a),
 	.csr_di(csr_di),
 	.csr_we(csr_we),
 	.csr_do(csr_do_wdt),
 
-	.wdt_en_default({!failsafe_watchdog_disabled, watchdog_enabled}),
+	.wdt_en_default({~failsafe_watchdog_disabled, watchdog_enabled}),
 	.wdt_out(wdt_out),
 	.wdt_out_strobe(wdt_out_strobe),
 	.failsafe_mode(wdt_failsafe_mode),
