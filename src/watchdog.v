@@ -24,7 +24,7 @@ module watchdog #(
 	input [1:0] wdt_en_default,
 	output [1:0] wdt_out,
 	output [1:0] wdt_out_strobe,
-	output force_recovery_mode,
+	output failsafe_mode,
 	output irq
 );
 
@@ -49,7 +49,7 @@ always @(posedge clk) begin
 		wdt_cnt <= wdt_cnt - 8'd1;
 end
 wire wdt_bite = |wdt_en & (wdt_cnt == 8'd0);
-assign force_recovery_mode = wdt_bite & wdt_en[1];
+assign failsafe_mode = wdt_bite & wdt_en[1];
 assign wdt_out = wdt_oe & {wdt_bite, wdt_bite};
 
 reg wdt_bite0;

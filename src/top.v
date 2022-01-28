@@ -238,21 +238,21 @@ sync_edge sync_edge_poreset (
 assign ESPI_RESET_3V3_n = ~rst;
 assign RESET_OUT_3V3_n = ~rst;
 
-reg force_recovery;
-initial force_recovery = 1'b0;
+reg failsafe_mode;
+initial failsafe_mode = 1'b0;
 always @(posedge clk) begin
 	if (rst_posedge)
-		force_recovery <= force_recov | wdt_force_recovery_mode;
+		failsafe_mode <= force_recovery | wdt_failsafe_mode;
 end
 wire drive_rcw_src = pwr_enable & (rst | rst0);
 
 wire irq_out;
 wire emmc_boot;
 wire [2:0] rcw_src = emmc_boot ? 3'b001 : 3'b010;
-assign SER2_TX_CFG_RCW_SRC0 = force_recovery ? 1'bz :
+assign SER2_TX_CFG_RCW_SRC0 = failsafe_mode ? 1'bz :
 			      drive_rcw_src ? rcw_src[0] :
 			      1'bz;
-assign SER1_TX_CFG_RCW_SRC1 = force_recovery ? 1'bz :
+assign SER1_TX_CFG_RCW_SRC1 = failsafe_mode ? 1'bz :
 			      drive_rcw_src ? rcw_src[1] :
 			      1'bz;
 
@@ -264,8 +264,8 @@ assign SER1_TX_CFG_RCW_SRC1 = force_recovery ? 1'bz :
  * resistor on this signal is disabled. Thus, the power-off request will
  * not work in recovery mode, because we need to be push-pull.
  */
-assign CPLD_INTERRUPT_CFG_RCW_SRC2 = drive_rcw_src ? (force_recovery ? 1'bz : rcw_src[2]) :
-				     force_recov ? ~irq_out :
+assign CPLD_INTERRUPT_CFG_RCW_SRC2 = drive_rcw_src ? (failsafe_mode ? 1'bz : rcw_src[2]) :
+				     force_recovery ? ~irq_out :
 				     irq_out ? 1'b0 : 1'bz;
 
 wire i2c_bus_reset_sda_out;
@@ -312,7 +312,7 @@ assign I2C_PM_SDA = (!i2c_pm_sda_out) ? 1'b0 : 1'bz;
 assign I2C_PM_SCL = (!i2c_pm_scl_out) ? 1'b0 : 1'bz;
 
 reg healthy_led;
-wire healthy_led_ce = force_recovery ? ce_8hz : ce_1hz;
+wire healthy_led_ce = failsafe_mode ? ce_8hz : ce_1hz;
 always @(posedge clk) begin
 	if (healthy_led_ce)
 		healthy_led <= ~healthy_led;
@@ -381,7 +381,7 @@ cfg_ctrl_altera_ufm #(
 	.csr_do(csr_do_cfg_ctrl),
 
 	.start(rst_posedge),
-	.force_recovery(force_recovery),
+	.failsafe_mode(failsafe_mode),
 	.done(cfg_read_done),
 	.cfg(cfg),
 	.osc(clk)
@@ -418,7 +418,7 @@ gpi #(
 wire [1:0] wdt_out;
 wire [1:0] wdt_out_strobe;
 wire wdt_irq;
-wire wdt_force_recovery_mode;
+wire wdt_failsafe_mode;
 watchdog #(
 	.BASE_ADDR(5'h4),
 	.DEFAULT_TIMEOUT(8'h08),
@@ -437,7 +437,7 @@ watchdog #(
 	.wdt_en_default({!failsafe_watchdog_disabled, watchdog_enabled}),
 	.wdt_out(wdt_out),
 	.wdt_out_strobe(wdt_out_strobe),
-	.force_recovery_mode(wdt_force_recovery_mode),
+	.failsafe_mode(wdt_failsafe_mode),
 	.irq(wdt_irq)
 );
 assign cpu_reset = wdt_out_strobe[0];
@@ -750,12 +750,12 @@ sync_edge sync_edge_batlow (
 	.out_posedge()
 );
 
-wire force_recov;
+wire force_recovery;
 sync_edge sync_edge_force_recov (
 	.clk(clk),
 
 	.in(~FORCE_RECOV_n),
-	.out(force_recov),
+	.out(force_recovery),
 	.out0(),
 	.out_edge(),
 	.out_negedge(),
@@ -780,7 +780,7 @@ gpi #(
 		lid,
 		batlow,
 		sleep,
-		~force_recov,
+		~force_recovery,
 		~power_btn
 	})
 );

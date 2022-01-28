@@ -17,7 +17,7 @@ module cfg_ctrl_altera_ufm #(
 	output reg [7:0] csr_do,
 
 	input start,
-	input force_recovery,
+	input failsafe_mode,
 	output done,
 	output [15:0] cfg,
 	output osc
@@ -90,7 +90,7 @@ always @(posedge clk) begin
 	end
 
 	SHIFT_DATA: begin
-		ufm_data <= {ufm_data[14:0], force_recovery ? 1'b1 : drdout};
+		ufm_data <= {ufm_data[14:0], failsafe_mode ? 1'b1 : drdout};
 		if (counter == 4'd15)
 			state <= DONE;
 		else
