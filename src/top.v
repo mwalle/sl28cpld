@@ -6,7 +6,7 @@
  */
 
 module sl28_top #(
-	CPLD_VERSION = 8'hff
+	parameter CPLD_VERSION = 8'hff
 ) (
 	output HEALTHY_LED_n,
 
@@ -654,7 +654,6 @@ sync_edge sync_edge_power_btn (
 
 	.in(~POWER_BTN_n),
 	.out(power_btn),
-	.out(),
 	.out0(),
 	.out_edge(power_btn_edge),
 	.out_negedge(),
