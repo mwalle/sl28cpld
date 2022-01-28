@@ -8,7 +8,7 @@ tb_watchdog: tb_watchdog.v sys.v csr.v slowclock.v ../src/watchdog.v
 tb_i2c_bus_reset: tb_i2c_bus_reset.v sys.v slowclock.v ../src/i2c_bus_reset.v
 tb_power_fsm: tb_power_fsm.v sys.v slowclock.v ../src/power_fsm.v
 tb_reset_req: tb_reset_req.v sys.v slowclock.v ../src/sync_edge.v ../src/async_negedge_latch_sync_out.v ../src/reset_req.v
-tb_cfg_ctrl_altera_ufm: tb_cfg_ctrl_altera_ufm.v sys.v csr.v ../src/cfg_ctrl_altera_ufm.v
+tb_cfg_ctrl_altera_ufm: tb_cfg_ctrl_altera_ufm.v sys.v csr.v altufm_none.v ../src/cfg_ctrl_altera_ufm.v
 
 tb_%:
 	iverilog -o $@ $(filter-out sys.v csr.v slowclock.v,$^)
