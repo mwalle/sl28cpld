@@ -239,10 +239,14 @@ assign ESPI_RESET_3V3_n = ~rst;
 assign RESET_OUT_3V3_n = ~rst;
 
 reg failsafe_mode;
+reg latched_force_recovery;
 initial failsafe_mode = 1'b0;
+initial latched_force_recovery = 1'b0;
 always @(posedge clk) begin
-	if (rst_posedge)
+	if (rst_posedge) begin
 		failsafe_mode <= force_recovery | wdt_failsafe_mode;
+		latched_force_recovery <= force_recovery;
+	end
 end
 wire drive_rcw_src = pwr_enable & (rst | rst0);
 
@@ -419,6 +423,7 @@ wire [1:0] wdt_out;
 wire [1:0] wdt_out_strobe;
 wire wdt_irq;
 wire wdt_failsafe_mode;
+wire failsafe_watchdog_en_default = ~failsafe_watchdog_disabled & ~latched_force_recovery;
 watchdog #(
 	.BASE_ADDR(5'h4),
 	.DEFAULT_TIMEOUT(8'h08),
@@ -434,7 +439,7 @@ watchdog #(
 	.csr_we(csr_we),
 	.csr_do(csr_do_wdt),
 
-	.wdt_en_default({~failsafe_watchdog_disabled, watchdog_enabled}),
+	.wdt_en_default({failsafe_watchdog_en_default, watchdog_enabled}),
 	.wdt_out(wdt_out),
 	.wdt_out_strobe(wdt_out_strobe),
 	.failsafe_mode(wdt_failsafe_mode),
