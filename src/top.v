@@ -495,7 +495,7 @@ gpo #(
 );
 wire ta_prog_sfp = misc_out[0];
 wire spi_flash_disable_wp = misc_out[1];
-wire carrier_standby = misc_out[2];
+wire carrier_standby = ~rst & misc_out[2];
 wire pcie_a_rst = rst | misc_out[3];
 wire pcie_b_rst = rst | misc_out[4];
 wire pcie_c_rst = rst | misc_out[5];
