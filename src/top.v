@@ -176,7 +176,7 @@ reg is_power_off_req;
 always @(posedge clk) begin
 	if (rst)
 		is_power_off_req <= 1'b0;
-	else if (!irq_out && !drive_rcw_src)
+	else if (!irq_out && !drive_rcw_src & !failsafe_mode)
 		is_power_off_req <= ~CPLD_INTERRUPT_CFG_RCW_SRC2;
 end
 
