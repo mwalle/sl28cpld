@@ -6,7 +6,7 @@
  */
 
 module sl28_top #(
-	CPLD_VERSION = 8'h20
+	CPLD_VERSION = 8'hff
 ) (
 	output HEALTHY_LED_n,
 
