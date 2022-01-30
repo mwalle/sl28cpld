@@ -126,6 +126,23 @@ sync_edge sync_edge_wol_int (
 	.out_posedge()
 );
 
+/*
+ * WOL_INT_GBE# is connected to the AR8031 WOL_INT# output. For unknown
+ * reasons, the PHY will pulse that line one time after it is taken out of
+ * reset after the first power-up. We will just filter the first edge.
+ * Both the CPLD and the PHY have the same supply voltage, thus both will
+ * be 'in sync'. The only drawback is after the CPLD got updated; in this
+ * case the first WoL interrupt is lost. But this case is very unlikely and
+ * who doesn't a power-cycle after a CPLD update anyways ;)
+ */
+reg wol_int_happened;
+initial wol_int_happened = 1'b0;
+always @(posedge clk) begin
+	if (wol_int_negedge)
+		wol_int_happened <= 1'b1;
+end
+wire wol_int_negedge_filtered = wol_int_happened & wol_int_negedge;
+
 wire pcie_wake_negedge;
 sync_edge sync_edge_pcie_wake (
 	.clk(clk),
@@ -159,7 +176,7 @@ power_fsm #(
 );
 assign PWR_FORCE_DISABLE_n = pwr_enable ? 1'bz : 1'b0;
 assign power_off = power_off_by_reg | power_off_by_reset;
-assign power_on = rtc_int_negedge | wol_int_negedge | pcie_wake_negedge;
+assign power_on = rtc_int_negedge | wol_int_negedge_filtered | pcie_wake_negedge;
 
 reg is_power_off_req;
 always @(posedge clk) begin
