@@ -63,7 +63,6 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to POWER_BTN_n
 
 set_location_assignment PIN_B2 -to FORCE_RECOV_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to FORCE_RECOV_n
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to FORCE_RECOV_n
 
 set_location_assignment PIN_B10 -to SLEEP_n
 set_instance_assignment -name IO_STANDARD "1.8 V" -to SLEEP_n
