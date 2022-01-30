@@ -114,18 +114,6 @@ usbfixer usbfixer (
 
 wire clk;
 
-wire cfg_read_done, cfg_read_done_posedge;
-sync_edge sync_edge_cfg_read_done (
-	.clk(clk),
-
-	.in(cfg_read_done),
-	.out(),
-	.out0(),
-	.out_edge(),
-	.out_negedge(),
-	.out_posedge(cfg_read_done_posedge)
-);
-
 wire wol_int_negedge;
 sync_edge sync_edge_wol_int (
 	.clk(clk),
@@ -154,6 +142,7 @@ wire initial_pwr_off;
 wire power_on;
 wire power_off;
 wire pwr_enable;
+wire cfg_read_done;
 power_fsm #(
 	.LONG_PRESS_DELAY(3'd5)
 ) power_fsm (
@@ -161,7 +150,7 @@ power_fsm #(
 	.ce_1hz(ce_1hz),
 	.ce_8hz(ce_8hz),
 
-	.start(cfg_read_done_posedge),
+	.start(cfg_read_done),
 	.initial_pwr_off(initial_pwr_off),
 	.pwr_on(power_on),
 	.pwr_off(power_off),
