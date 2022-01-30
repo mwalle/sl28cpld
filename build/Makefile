@@ -6,6 +6,8 @@ FAMILY = MAX V
 PART = 5M570ZM100I5
 BOARDFILE = pins
 
+GIT_COMMIT = $(shell echo $$(git describe --always --abbrev=7 --dirty=d)0 | cut -b1-8)
+
 SRCS  = ../src/top.v ../src/i2c_slave.v ../src/pwm.v ../src/gpio.v
 SRCS += ../src/gpi.v ../src/gpo.v ../src/tacho.v ../src/usbfixer.v
 SRCS += ../src/clockgen.v ../src/watchdog.v ../src/cfg_ctrl_altera_ufm.v
@@ -31,6 +33,8 @@ smart.log: $(PROJECT).qpf $(PROJECT).qsf
 
 $(PROJECT).qpf $(PROJECT).qsf: $(BOARDFILE)
 	@quartus_sh --prepare -f "$(FAMILY)" -t "$(TOP_LEVEL_ENTITY)" $(PROJECT)
+	@quartus_sh --set STRATIX_JTAG_USER_CODE=$(GIT_COMMIT) $(PROJECT)
+	@quartus_sh --set USE_CHECKSUM_AS_USERCODE=OFF $(PROJECT)
 	@echo >> $(PROJECT).qsf
 	@cat $(BOARDFILE) >> $(PROJECT).qsf
 
