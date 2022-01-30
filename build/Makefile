@@ -15,7 +15,7 @@ SRCS += ../src/i2c_bus_reset.v ../src/power_fsm.v
 SRCS += ../src/intc.v ../src/sync_edge.v ../src/reset_req.v
 SRCS += ../src/async_negedge_latch_sync_out.v ../src/config_trits.v
 
-all: $(PROJECT).jbc summary
+all: $(PROJECT).jbc $(PROJECT).jam summary
 
 map: $(PROJECT).map.rpt
 fit: $(PROJECT).fit.rpt

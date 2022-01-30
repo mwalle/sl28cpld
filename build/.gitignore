@@ -1,6 +1,7 @@
 incremental_db/
 db/
 *.chg
+*.jam
 *.jbc
 *.jdi
 *.rpt
