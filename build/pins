@@ -116,9 +116,9 @@ set_instance_assignment -name IO_STANDARD "1.8 V" -to SPI_FLASH_DISABLE_WP
 set_location_assignment PIN_L6 -to CARRIER_STBY_n_3V3
 
 set_location_assignment PIN_B1 -to PCIE_A_RST_n
-set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PCIE_B_RST_n
-set_location_assignment PIN_K8 -to PCIE_B_RST_n
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PCIE_A_RST_n
+set_location_assignment PIN_K8 -to PCIE_B_RST_n
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PCIE_B_RST_n
 set_location_assignment PIN_L9 -to PCIE_C_RST_n
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to PCIE_C_RST_n
 
